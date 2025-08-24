@@ -1,4 +1,4 @@
-# Tinfoil Shop Admin Panel
+# TinFlect Shop - Host your own TinFoil store and manage your games!
 
 
 ![Logo](https://i.imgur.com/X6u5b1a.png)
