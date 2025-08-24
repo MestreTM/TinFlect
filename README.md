@@ -138,3 +138,7 @@ An interface for viewing and searching the historical log database.
     * User
     * Date Range (Start and End Date)
 * **Detailed View**: For logs with extra data, a button allows expanding a detailed view of the raw JSON data associated with the event.
+
+
+Big thanks to a1ex4 - I used some ideas and for now the titledb package he generated.
+https://github.com/a1ex4/ownfoil/
