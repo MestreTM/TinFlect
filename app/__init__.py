@@ -11,10 +11,11 @@ import threading
 import queue
 import asyncio
 
+from . import data_service
+
 app = Flask(__name__, template_folder='../templates', static_folder='../static')
 
 
-# --- LOAD CONFIGURATION FROM config.json ---
 try:
     with open('config.json', 'r', encoding='utf-8') as config_file:
         app.config.update(json.load(config_file))
@@ -25,7 +26,6 @@ except json.JSONDecodeError:
     raise RuntimeError("Error reading 'config.json'. Check if the JSON format is valid.")
 
 
-# --- ADDITIONAL CONFIGURATION AND GLOBAL STATE ---
 app.secret_key = os.urandom(24)
 app.permanent_session_lifetime = 3600
 
@@ -66,7 +66,6 @@ def inject_global_variables():
         app=app
     )
 
-# --- TRANSLATION AUTOMATION FUNCTION ---
 def setup_translations():
     """
     Executes pybabel commands to extract, update, and compile
@@ -124,17 +123,12 @@ def setup_translations():
 
     print("Translation setup complete.")
 
-# --- GLOBAL APPLICATION STATE ---
 app.config['CORE_PROCESS'] = None
 app.config['CORE_STATUS'] = "Offline"
 app.config['MAX_HISTORY'] = 100
 app.config['SYSTEM_START_TIME'] = dt.now().strftime('%Y-%m-%d %H:%M:%S')
 app.config['ITEMS_PER_PAGE'] = 30
-app.config['_titles_db'] = None
-app.config['_cnmts_db'] = None
-app.config['_versions_db'] = None
 
-# --- EVENT AND LOG MANAGER ---
 class EventManager:
     def __init__(self):
         self.history = deque(maxlen=app.config['MAX_HISTORY'])
@@ -153,7 +147,7 @@ class EventManager:
                 self.subscribers.remove(q)
     
     def add_event(self, event):
-        from .models import store_log_entry # Local import to avoid circular dependencies
+        from .models import store_log_entry
         with self.lock:
             store_log_entry(event)
             self.history.append(event)
@@ -169,8 +163,6 @@ class EventManager:
 
 event_manager = EventManager()
 
-# --- CENTRALIZED LOG FUNCTION ---
-# Moved from routes.py to __init__.py to break a circular import.
 def add_log_entry(event_type, message, ip=None, user=None, source='admin', extra_data=None):
     """
     Adds a log entry and updates the core status if the message is relevant.
@@ -183,7 +175,6 @@ def add_log_entry(event_type, message, ip=None, user=None, source='admin', extra
     }
     event_manager.add_event(entry)
 
-    # Status update logic based on the log level from the core
     if source == 'core' and entry['level'] == 'SUCCESS':
         app.config['CORE_STATUS'] = "Online"
     elif source == 'core' and message == 'Shop core terminated':
@@ -194,9 +185,9 @@ loop = asyncio.new_event_loop()
 threading.Thread(target=loop.run_forever, daemon=True).start()
 
 
-# --- AUTOMATION EXECUTION AND ROUTE IMPORT ---
 if os.environ.get('WERKZEUG_RUN_MAIN') != 'true':
     setup_translations()
+    with app.app_context():
+        data_service.initialize_titledb()
 
-# The route import MUST remain at the end to avoid other circular dependencies.
 from app import routes
