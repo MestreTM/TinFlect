@@ -3,7 +3,7 @@
 
 ![Logo](https://i.imgur.com/X6u5b1a.png)
 
-This project is a comprehensive, web-based administration panel for managing a self-hosted Tinfoil server. It provides a user-friendly interface to control users, manage the game library, monitor server activity, and configure the core Tinfoil server process.
+This project is a comprehensive, web-based administration panel for managing a self-hosted Tinfoil server. It provides a user-friendly interface to control users, manage the game library, monitor server activity, and configure the core Tinfoil server process. Additionally, it includes a Tinfoil shop system with authentication and core ID-based linking.
 
 ---
 
@@ -24,6 +24,8 @@ This project is a comprehensive, web-based administration panel for managing a s
 * **Detailed Game View**: See in-depth information for each game, including metadata, descriptions, screenshots, and the availability of related updates and DLCs.
 * **Server Configuration**: Easily change core settings like the shop title, network port, and public-facing URL directly from the UI.
 * **Customizable Tinfoil Messages**: Edit the messages displayed within the Tinfoil application, using dynamic placeholders for a personalized experience.
+* **Game List Encryption System**: Encrypts the game list using the public.key provided by Tinfoil.
+* **Account and UID Linking System**: Links a console to a specific account, making it impossible to share a login for use on another console.
 
 ---
 
