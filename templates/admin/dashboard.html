@@ -1,0 +1,407 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ _('Dashboard') }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+    </div>
+</div>
+
+<div class="mb-3">
+    <span id="datetime" class="text-muted"></span>
+</div>
+
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card border-primary">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-server me-2"></i>{{ _('Server Status') }}
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-{% if config.CORE_PUBLIC_URL %}center{% else %}between{% endif %} mb-3">
+                    <div class="text-center">
+                        <h5 class="card-title text-primary">{{ _('Shop Core') }}</h5>
+                        <p class="display-5">
+                            <span id="core-status-badge" class="badge bg-{% if core_status == 'Online' %}success{% else %}danger{% endif %}">
+                                {% if core_status == "Online" %}{{ _('Online') }}{% else %}{{ _('Offline') }}{% endif %}
+                            </span>
+                        </p>
+                    </div>
+                    {% if not config.CORE_PUBLIC_URL %}
+                    <div class="text-center">
+                        <h5 class="card-title text-success">{{ _('Port') }}</h5>
+                        <p id="core-port" class="display-5">{{ core_port }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                <p class="text-muted mb-0" id="server-address">
+                    <i class="bi bi-info-circle me-1"></i>
+                    {{ _('Address for Tinfoil:') }}
+                    {% if config.CORE_PUBLIC_URL %}
+                        {% if 'http://' in config.CORE_PUBLIC_URL or 'https://' in config.CORE_PUBLIC_URL %}
+                            {{ config.CORE_PUBLIC_URL }}
+                        {% else %}
+                            http://{{ config.CORE_PUBLIC_URL }}
+                        {% endif %}
+                    {% else %}
+                        http://{{ request.host.split(':')[0] }}:{{ core_port }}
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-5 mb-4">
+        <div class="card border-success">
+            <div class="card-header bg-success text-white">
+                <i class="bi bi-graph-up me-2"></i>{{ _('Shop Summary') }}
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 text-center mb-3">
+                        <h5 class="card-title text-primary">
+                            <i class="bi bi-people me-1"></i> {{ _('Users') }}
+                        </h5>
+                        <p class="display-5">{{ user_count }}</p>
+                    </div>
+                    <div class="col-md-4 text-center mb-3">
+                        <h5 class="card-title text-info">
+                            <i class="bi bi-joystick me-1"></i> {{ _('Games') }}
+                        </h5>
+                        <p class="display-5">{{ games_count }}</p>
+                    </div>
+                    <div class="col-md-4 text-center mb-3">
+                        <h5 class="card-title text-warning">
+                            <i class="bi bi-journal me-1"></i> {{ _('Logs in Session') }}
+                        </h5>
+                        <p class="display-5" id="log-count">0</p>
+                    </div>
+                </div>
+                <div class="mt-2 text-center small text-muted">
+                    {{ _('Updated at:') }} {{ datetime.now().strftime('%H:%M:%S') }}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-lightning me-2"></i>{{ _('Quick Actions') }}
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('profile') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-people me-1"></i>{{ _('Manage Users') }}
+                    </a>
+                    <a href="{{ url_for('restart_core') }}" class="btn btn-outline-warning">
+                        <i class="bi bi-arrow-repeat me-1"></i>{{ _('Restart Tinfoil Server') }}
+                    </a>
+                    <a href="{{ url_for('toggle_core') }}"
+                       class="btn btn-outline-{% if core_status == 'Online' %}danger{% else %}success{% endif %} toggle-core-button">
+                        <i class="bi bi-{% if core_status == 'Online' %}stop-circle{% else %}play-circle{% endif %} me-1"></i>
+                        {% if core_status == 'Online' %}{{ _('Stop Tinfoil Server') }}{% else %}{{ _('Start Tinfoil Server') }}{% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+                <i class="bi bi-terminal me-2"></i>{{ _('Real-time Log') }}
+                <div class="float-end">
+                    <div class="d-inline-block me-2">
+                        <div class="input-group input-group-sm">
+                            <input type="text" id="log-search" class="form-control" placeholder="{{ _('Search...') }}">
+                            <button class="btn btn-outline-light" type="button" id="log-search-btn">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="d-inline-block me-2">
+                        <select id="log-level-filter" class="form-select form-select-sm">
+                            <option value="all">{{ _('All levels') }}</option>
+                            <option value="INFO">Info</option>
+                            <option value="WARNING">Warning</option>
+                            <option value="ERROR">Error</option>
+                            <option value="SUCCESS">Success</option>
+                        </select>
+                    </div>
+                    <div class="d-inline-block me-2">
+                        <select id="log-source-filter" class="form-select form-select-sm">
+                            <option value="all">{{ _('All sources') }}</option>
+                            <option value="core">Core</option>
+                            <option value="watcher">Watcher</option>
+                            <option value="admin">Admin</option>
+                            <option value="system">System</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-sm btn-outline-light" id="clear-logs">
+                        <i class="bi bi-trash me-1"></i>{{ _('Clear') }}
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div id="realtime-log-container" style="height: 300px; overflow-y: auto; background-color: #1a1a1a; padding: 10px; font-family: monospace;">
+                    <div class="text-center text-muted py-5" id="log-placeholder">
+                        <i class="bi bi-clock-history display-4 mb-3"></i>
+                        <p>{{ _('Waiting for events...') }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <small>{{ _('Monitoring system activities in real time') }}</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-file-earmark-text me-2"></i>{{ _('Recent Log Files') }}
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>{{ _('File Name') }}</th>
+                                <th>{{ _('Date') }}</th>
+                                <th>{{ _('Size') }}</th>
+                                <th>{{ _('Actions') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in log_files %}
+                            <tr>
+                                <td>{{ log.name }}</td>
+                                <td>{{ log.date }}</td>
+                                <td>{{ log.size|filesizeformat }}</td>
+                                <td>
+                                    <a href="{{ url_for('view_log', filename=log.name) }}"
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye me-1"></i>{{ _('View') }}
+                                    </a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center">{{ _('No log files found') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const translations = {
+    noLogsFound: "{{ _('No logs found with the current filters') }}",
+    waitingForEvents: "{{ _('Waiting for events...') }}",
+    currentLocale: "{{ babel.locale|default('en') }}",
+    statusOnline: "{{ _('Online') }}",
+    statusOffline: "{{ _('Offline') }}",
+    stopServer: "{{ _('Stop Tinfoil Server') }}",
+    startServer: "{{ _('Start Tinfoil Server') }}"
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    const dateTimeElement = document.getElementById('datetime');
+    const logContainer = document.getElementById('realtime-log-container');
+    const logPlaceholder = document.getElementById('log-placeholder');
+    const logCountElement = document.getElementById('log-count');
+    const clearButton = document.getElementById('clear-logs');
+    const logSearchInput = document.getElementById('log-search');
+    const logSearchBtn = document.getElementById('log-search-btn');
+    const logLevelFilter = document.getElementById('log-level-filter');
+    const logSourceFilter = document.getElementById('log-source-filter');
+    
+    let allLogs = [];
+    let eventSource = null;
+    let reconnectAttempts = 0;
+    const MAX_RECONNECT_ATTEMPTS = 10;
+    const RECONNECT_DELAY = 5000;
+    
+    function addLogToInterface(entry) {
+        if (!logContainer) return;
+        if (logPlaceholder && logContainer.contains(logPlaceholder)) { logPlaceholder.remove(); }
+        const logElement = document.createElement('div');
+        logElement.className = 'log-entry mb-2';
+        logElement.dataset.source = entry.source || 'admin';
+        logElement.dataset.level = entry.level || 'INFO';
+        logElement.dataset.type = entry.type || 'info';
+        let badgeClass = 'badge ';
+        switch((entry.level || 'info').toLowerCase()) {
+            case 'success': badgeClass += 'bg-success'; break;
+            case 'info': badgeClass += 'bg-info'; break;
+            case 'error': badgeClass += 'bg-danger'; break;
+            case 'warning': badgeClass += 'bg-warning text-dark'; break;
+            default: badgeClass += 'bg-secondary';
+        }
+        logElement.innerHTML = `<div class="d-flex justify-content-between"><span class="${badgeClass}">${entry.type.toUpperCase()}</span><small class="text-muted">${entry.timestamp}</small></div><div class="mt-1" style="white-space: pre-wrap; word-break: break-word;">${entry.message}</div><div class="text-muted small"><i class="bi bi-person"></i> ${entry.user || 'N/A'} | <i class="bi bi-pc-display"></i> ${entry.ip || 'N/A'} | <i class="bi bi-tag"></i> ${entry.level || 'INFO'} | <i class="bi bi-database"></i> ${entry.source || 'admin'}</div><hr class="my-2 border-secondary">`;
+        logContainer.insertBefore(logElement, logContainer.firstChild);
+        allLogs.push(entry);
+        if (logContainer.children.length > 200) {
+            logContainer.removeChild(logContainer.lastChild);
+            allLogs.shift();
+        }
+        applyFilters();
+    }
+    
+    function applyFilters() {
+        if (!logContainer) return;
+        const searchTerm = (logSearchInput.value || '').toLowerCase();
+        const levelFilter = logLevelFilter.value || 'all';
+        const sourceFilter = logSourceFilter.value || 'all';
+        const logEntries = logContainer.querySelectorAll('.log-entry');
+        let visibleCount = 0;
+        logEntries.forEach(entry => {
+            const logSource = entry.dataset.source || 'admin';
+            const logLevel = entry.dataset.level || 'INFO';
+            const logMessage = (entry.textContent || '').toLowerCase();
+            const matchesSearch = searchTerm === '' || logMessage.includes(searchTerm);
+            const matchesLevel = levelFilter === 'all' || logLevel.toUpperCase() === levelFilter.toUpperCase();
+            const matchesSource = sourceFilter === 'all' || logSource.toLowerCase() === sourceFilter.toLowerCase();
+            const shouldShow = matchesSearch && matchesLevel && matchesSource;
+            entry.style.display = shouldShow ? 'block' : 'none';
+            if (shouldShow) visibleCount++;
+        });
+        if (logCountElement) { logCountElement.textContent = visibleCount; }
+        const currentPlaceholder = logContainer.querySelector('#log-placeholder');
+        if (visibleCount === 0 && !currentPlaceholder) {
+            const placeholder = document.createElement('div');
+            placeholder.className = 'text-center text-muted py-5';
+            placeholder.id = 'log-placeholder';
+            placeholder.innerHTML = `<i class="bi bi-search display-4 mb-3"></i><p>${translations.noLogsFound}</p>`;
+            logContainer.appendChild(placeholder);
+        } else if (visibleCount > 0 && currentPlaceholder) {
+            currentPlaceholder.remove();
+        }
+    }
+
+    // --- FUNCTION TO UPDATE CORE STATUS (AJAX) ---
+    function updateCoreStatus() {
+        fetch('/api/core_status')
+            .then(response => {
+                if (!response.ok) { throw new Error('Network response was not ok'); }
+                return response.json();
+            })
+            .then(data => {
+                const statusBadge = document.getElementById('core-status-badge');
+                const toggleButton = document.querySelector('.toggle-core-button');
+                const corePortElement = document.getElementById('core-port');
+
+                if (!statusBadge || !toggleButton) return;
+
+                if (data.status === 'Online') {
+                    statusBadge.textContent = translations.statusOnline;
+                    statusBadge.classList.remove('bg-danger');
+                    statusBadge.classList.add('bg-success');
+                } else {
+                    statusBadge.textContent = translations.statusOffline;
+                    statusBadge.classList.remove('bg-success');
+                    statusBadge.classList.add('bg-danger');
+                }
+
+                const icon = toggleButton.querySelector('i');
+                const textNode = toggleButton.lastChild; 
+                if (data.status === 'Online') {
+                    toggleButton.classList.remove('btn-outline-success');
+                    toggleButton.classList.add('btn-outline-danger');
+                    icon.className = 'bi bi-stop-circle me-1';
+                    textNode.textContent = ' ' + translations.stopServer;
+                } else {
+                    toggleButton.classList.remove('btn-outline-danger');
+                    toggleButton.classList.add('btn-outline-success');
+                    icon.className = 'bi bi-play-circle me-1';
+                    textNode.textContent = ' ' + translations.startServer;
+                }
+                
+                if (corePortElement && data.port) {
+                    corePortElement.textContent = data.port;
+                }
+            })
+            .catch(error => console.error('Error fetching core status:', error));
+    }
+
+    // --- SSE (Server-Sent Events) CONNECTION ---
+    function setupEventSource() {
+        if (eventSource) { eventSource.close(); }
+        eventSource = new EventSource('/realtime_logs');
+        eventSource.onopen = () => { console.log('SSE connection opened'); reconnectAttempts = 0; };
+        eventSource.onmessage = (e) => {
+            try {
+                const logEntry = JSON.parse(e.data);
+                addLogToInterface(logEntry);
+            } catch (error) { console.error('Error processing log:', error); }
+        };
+        eventSource.onerror = (e) => {
+            console.error('SSE connection error:', e);
+            if (eventSource) { eventSource.close(); }
+            if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+                reconnectAttempts++;
+                console.log(`Attempting to reconnect (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})...`);
+                setTimeout(setupEventSource, RECONNECT_DELAY);
+            } else { console.error('Maximum reconnection attempts reached'); }
+        };
+    }
+    
+    // --- PAGE INITIALIZATION ---
+    function updateDateTime() {
+        if (dateTimeElement) {
+            const now = new Date();
+            dateTimeElement.textContent = now.toLocaleString(translations.currentLocale, {
+                year: 'numeric', month: 'long', day: 'numeric',
+                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+            });
+        }
+    }
+
+    // Initializes all page functionalities
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
+    
+    setupEventSource();
+    
+    // Add polling (AJAX) for core status
+    updateCoreStatus(); // Executes once immediately on page load
+    setInterval(updateCoreStatus, 5000); // And then repeats every 5 seconds
+
+    // Listeners for filter and clear log buttons
+    if (clearButton) {
+        clearButton.addEventListener('click', function() {
+            logContainer.innerHTML = '';
+            allLogs = [];
+            const placeholder = document.createElement('div');
+            placeholder.className = 'text-center text-muted py-5';
+            placeholder.id = 'log-placeholder';
+            placeholder.innerHTML = `<i class="bi bi-clock-history display-4 mb-3"></i><p>${translations.waitingForEvents}</p>`;
+            logContainer.appendChild(placeholder);
+            if (logCountElement) { logCountElement.textContent = '0'; }
+        });
+    }
+    
+    if (logSearchInput) logSearchInput.addEventListener('input', applyFilters);
+    if (logSearchBtn) logSearchBtn.addEventListener('click', applyFilters);
+    if (logLevelFilter) logLevelFilter.addEventListener('change', applyFilters);
+    if (logSourceFilter) logSourceFilter.addEventListener('change', applyFilters);
+    
+    applyFilters();
+    
+    window.addEventListener('beforeunload', () => {
+        if (eventSource) { eventSource.close(); }
+    });
+});
+</script>
+{% endblock %}

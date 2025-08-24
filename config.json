@@ -1,0 +1,23 @@
+{
+  "HOST": "0.0.0.0",
+  "ADMIN_HOST": "127.0.0.1",
+  "CORE_PORT": 15975,
+  "CORE_PUBLIC_URL": "",
+  "DIRECT_LINKS": false,
+  "ENABLE_DRM": true,
+  "ADMIN_PORT": 5000,
+  "USER_DB": "db/users.db",
+  "DB_FILE": "db/games.db",
+  "LOG_DB": "db/logs.db",
+  "DOWNLOADS_DB": "db/users_downloads.db",
+  "CUSTOM_TINFOIL_MESSAGE": true,
+  "DEBUG_MODE": true,
+  "SHOP_TITLE": "TinFlect Shop",
+  "LANGUAGE": "en",
+  "KEYS_FILE": "prod.keys",
+  "WATCHER_ENABLED": true,
+  "DAILY_DOWNLOAD_LIMIT": 0,
+  "scan_paths": [
+    "Z:\\games\\Games Swicth"
+  ]
+}

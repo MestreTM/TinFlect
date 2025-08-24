@@ -1,0 +1,182 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <i class="bi bi-file-earmark-text me-2"></i>{{ _('Stored Logs') }}
+    </div>
+    <div class="card-body">
+        <form method="GET" class="mb-4">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label for="search" class="form-label">{{ _('Search Message') }}</label>
+                    <input type="text" class="form-control" id="search" name="search" value="{{ search_query }}" placeholder="{{ _('Type to search...') }}">
+                </div>
+                <div class="col-md-2">
+                    <label for="type" class="form-label">{{ _('Log Type') }}</label>
+                    <select class="form-select" id="type" name="type">
+                        <option value="">{{ _('All Types') }}</option>
+                        {% for log_type in log_types %}
+                            <option value="{{ log_type }}" {% if log_type == selected_type %}selected{% endif %}>{{ log_type | capitalize }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="source" class="form-label">{{ _('Source') }}</label>
+                    <select class="form-select" id="source" name="source">
+                        <option value="">{{ _('All Sources') }}</option>
+                        {% for source in sources %}
+                            <option value="{{ source }}" {% if source == selected_source %}selected{% endif %}>{{ source | capitalize }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="user" class="form-label">{{ _('User') }}</label>
+                    <div class="dropdown">
+                        <input type="hidden" id="user" name="user" value="{{ selected_user | default('') }}">
+                        <button class="btn btn-outline-secondary dropdown-toggle form-control" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ selected_user | default(_('All Users')) }}
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                            <li>
+                                <input type="text" class="form-control user-search-input" id="userSearch" placeholder="{{ _('Search user...') }}" autocomplete="off">
+                            </li>
+                            <div class="user-options-container">
+                                <li><a class="dropdown-item user-option" href="#" data-value="">{{ _('All Users') }}</a></li>
+                                {% for user in users %}
+                                    <li><a class="dropdown-item user-option" href="#" data-value="{{ user }}">{{ user }}</a></li>
+                                {% endfor %}
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <label for="start_date" class="form-label">{{ _('Start Date') }}</label>
+                    <input type="date" class="form-control" id="start_date" name="start_date" value="{{ start_date }}">
+                </div>
+                <div class="col-md-1">
+                    <label for="end_date" class="form-label">{{ _('End Date') }}</label>
+                    <input type="date" class="form-control" id="end_date" name="end_date" value="{{ end_date }}">
+                </div>
+            </div>
+            <div class="mt-3">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="bi bi-funnel me-1"></i>{{ _('Filter') }}
+                </button>
+                <a href="{{ url_for('stored_logs') }}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i>{{ _('Clear Filters') }}
+                </a>
+            </div>
+        </form>
+
+        {% if error %}
+            <div class="alert alert-danger">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>{{ _('Date/Time') }}</th>
+                        <th>{{ _('Type') }}</th>
+                        <th>{{ _('Level') }}</th>
+                        <th>{{ _('Message') }}</th>
+                        <th>{{ _('IP') }}</th>
+                        <th>{{ _('User') }}</th>
+                        <th>{{ _('Source') }}</th>
+                        <th>{{ _('Details') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if logs %}
+                        {% for log in logs %}
+                            <tr>
+                                <td>{{ log['timestamp'] }}</td>
+                                <td>
+                                    <span class="badge {% if log['type'] | lower == 'login' %}bg-success{% elif log['type'] | lower == 'logout' %}bg-info{% elif log['type'] | lower == 'error' %}bg-danger{% elif log['type'] | lower == 'warning' %}bg-warning text-dark{% elif log['type'] | lower == 'system' %}bg-secondary{% elif log['type'] | lower == 'core' %}{% if 'blocked' in log['message'] | lower or 'error' in log['message'] | lower %}bg-danger{% elif 'success' in log['message'] | lower or 'online' in log['message'] | lower or 'started' in log['message'] | lower %}bg-success{% else %}bg-primary{% endif %}{% elif log['type'] | lower == 'user' %}bg-info{% elif log['type'] | lower == 'game' %}bg-info{% else %}bg-secondary{% endif %}">
+                                        {{ log['type'] | capitalize }}
+                                    </span>
+                                </td>
+                                <td>{{ log['level'] }}</td>
+                                <td>{{ log['message'] }}</td>
+                                <td>{{ log['ip'] }}</td>
+                                <td>{{ log['user'] }}</td>
+                                <td>{{ log['source'] | capitalize }}</td>
+                                <td>
+                                    {% if log['data'] and log['data'] != '{}' %}
+                                        <button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#details-{{ log['id'] }}" aria-expanded="false" aria-controls="details-{{ log['id'] }}">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <div class="collapse" id="details-{{ log['id'] }}">
+                                            <div class="card card-body mt-2">
+                                                <pre>{{ log['data'] | tojson(indent=2) | safe }}</pre>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted">{{ _('N/A') }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center">{{ _('No logs found') }}</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const allUsersText = {{ _('All Users')|tojson }};
+
+    // Search functionality in the user dropdown
+    const userSearch = document.getElementById('userSearch');
+    const userDropdown = document.getElementById('userDropdown');
+    const userInput = document.getElementById('user');
+    const userOptions = document.querySelectorAll('.user-option');
+
+    userSearch.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        userOptions.forEach(option => {
+            const text = option.textContent.toLowerCase();
+            // Shows or hides the option based on the search
+            option.parentElement.style.display = text.includes(searchTerm) ? '' : 'none';
+        });
+    });
+
+    userOptions.forEach(option => {
+        option.addEventListener('click', function(e) {
+            e.preventDefault();
+            const value = this.getAttribute('data-value');
+            const text = this.textContent;
+            userInput.value = value;
+            userDropdown.textContent = text;
+        });
+    });
+
+    // Clear filters
+    const clearButton = document.querySelector('a.btn-secondary[href*="stored_logs"]');
+    if (clearButton) {
+        clearButton.addEventListener('click', function(e) {
+            e.preventDefault(); // Prevents immediate navigation
+            // Clears all form fields
+            const form = this.closest('form');
+            form.querySelectorAll('input[type="text"], input[type="date"], select').forEach(input => input.value = '');
+            // Resets the user dropdown
+            userInput.value = '';
+            userDropdown.textContent = allUsersText;
+            // Submits the cleared form to reload the page without filters
+            form.submit();
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+<h1>{{ _('System Logs') }}</h1>
+
+<div class="filters mb-4">
+    <form method="get" class="row g-3">
+        <div class="col-md-3">
+            <label class="form-label">{{ _('Source') }}</label>
+            <select name="source" class="form-select">
+                <option value="all" {% if source_filter == 'all' %}selected{% endif %}>{{ _('All') }}</option>
+                <option value="admin" {% if source_filter == 'admin' %}selected{% endif %}>Admin</option>
+                <option value="core" {% if source_filter == 'core' %}selected{% endif %}>Core</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">{{ _('Type') }}</label>
+            <select name="type" class="form-select">
+                <option value="all" {% if type_filter == 'all' %}selected{% endif %}>{{ _('All') }}</option>
+                <option value="info" {% if type_filter == 'info' %}selected{% endif %}>{{ _('Info') }}</option>
+                <option value="warning" {% if type_filter == 'warning' %}selected{% endif %}>{{ _('Warning') }}</option>
+                <option value="error" {% if type_filter == 'error' %}selected{% endif %}>{{ _('Error') }}</option>
+                <option value="login" {% if type_filter == 'login' %}selected{% endif %}>{{ _('Login') }}</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">{{ _('Date') }}</label>
+            <select name="date" class="form-select">
+                <option value="">{{ _('All') }}</option>
+                {% for date in available_dates %}
+                    <option value="{{ date }}" {% if date_filter == date %}selected{% endif %}>{{ date }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">{{ _('Filter') }}</button>
+        </div>
+    </form>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>{{ _('Date/Time') }}</th>
+                <th>{{ _('Type') }}</th>
+                <th>{{ _('User') }}</th>
+                <th>{{ _('Source') }}</th>
+                <th>{{ _('Message') }}</th>
+                <th>{{ _('IP') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log[1] }}</td>
+                <td><span class="badge bg-{{ 'success' if log[2]=='info' else 'warning' if log[2]=='warning' else 'danger' if log[2]=='error' else 'primary' }}">{{ log[2] }}</span></td>
+                <td>{{ log[6] }}</td>
+                <td>{{ log[7] }}</td>
+                <td>{{ log[4] }}</td>
+                <td>{{ log[5] }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6">{{ _('No logs found') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if total_pages > 1 %}
+<nav>
+    <ul class="pagination">
+        {% for page_num in range(1, total_pages + 1) %}
+            <li class="page-item {% if page_num == page %}active{% endif %}">
+                <a class="page-link" href="?page={{ page_num }}&source={{ source_filter }}&type={{ type_filter }}&date={{ date_filter }}">{{ page_num }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</nav>
+{% endif %}
+
+<div class="mt-3">
+    <form action="{{ url_for('cleanup_logs') }}" method="post">
+        <button type="submit" class="btn btn-danger">{{ _('Clear Old Logs (30+ days)') }}</button>
+    </form>
+</div>
+{% endblock %}

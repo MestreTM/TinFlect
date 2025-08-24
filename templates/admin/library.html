@@ -1,0 +1,87 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}{{ _('Game Library') }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ _('Game Library') }}</h1>
+</div>
+
+<form method="get" action="{{ url_for('library') }}" class="mb-4">
+    <div class="row g-3">
+        <div class="col-sm-6">
+            <div class="input-group">
+                <input type="text" class="form-control" name="search" placeholder="{{ _('Search by name or Title ID...') }}" value="{{ search or '' }}">
+                <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <select name="category" class="form-select">
+                <option value="">{{ _('All Categories') }}</option>
+                {% for cat in categories %}
+                <option value="{{ cat }}" {% if cat == category %}selected{% endif %}>{{ cat }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-sm-3">
+            <select name="publisher" class="form-select">
+                <option value="">{{ _('All Publishers') }}</option>
+                {% for pub in publishers %}
+                <option value="{{ pub }}" {% if pub == publisher %}selected{% endif %}>{{ pub }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</form>
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4">
+    {% for game_id, game in games.items() %}
+    <div class="col">
+        <div class="card h-100 shadow-sm game-card">
+            <a href="{{ url_for('library_game_details', game_id=game_id) }}" class="text-decoration-none text-white">
+                <img src="{{ game.get('iconUrl') or 'https://via.placeholder.com/200x200/343a40/ffffff?text=Icon' }}" class="card-img-top" alt="{{ _('Cover of %(game_name)s', game_name=game.name) }}">
+                <div class="card-body">
+                    <h6 class="card-title text-truncate" title="{{ game.get('name', _('Unknown name')) }}">{{ game.get('name', _('Unknown name')) }}</h6>
+                    <p class="card-text text-muted small text-truncate">{{ game.get('publisher', _('Unknown publisher')) }}</p>
+                    
+                    {% if game.exists_in_db %}
+                        <span class="badge bg-success position-absolute top-0 end-0 m-2">{{ _('In shop') }}</span>
+                    {% else %}
+                        <span class="badge bg-danger position-absolute top-0 end-0 m-2">{{ _('Missing') }}</span>
+                    {% endif %}
+                </div>
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <p class="text-center text-muted">{{ _('No games found with the current filters.') }}</p>
+    </div>
+    {% endfor %}
+</div>
+
+{% if total_pages > 1 %}
+<nav aria-label="{{ _('Library pagination') }}" class="mt-5">
+    <ul class="pagination justify-content-center">
+        <li class="page-item {% if current_page == 1 %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('library', page=current_page-1, search=search, category=category, publisher=publisher) }}">{{ _('Previous') }}</a>
+        </li>
+        
+        {% for p in pagination_range %}
+            {% if p == '...' %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% else %}
+                <li class="page-item {% if p == current_page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('library', page=p, search=search, category=category, publisher=publisher) }}">{{ p }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+        
+        <li class="page-item {% if current_page == total_pages %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('library', page=current_page+1, search=search, category=category, publisher=publisher) }}">{{ _('Next') }}</a>
+        </li>
+    </ul>
+</nav>
+{% endif %}
+
+{% endblock %}

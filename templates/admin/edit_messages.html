@@ -1,0 +1,125 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ _('Edit Shop Messages') }}{% endblock %}
+
+{% block styles %}
+<style>
+    /* Custom styles for the documentation modal content */
+    #documentationModal .modal-body code {
+        background-color: #e9ecef;
+        padding: .2em .4em;
+        border-radius: 3px;
+        font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    #documentationModal .table-placeholders {
+        margin-top: 1rem;
+    }
+    .form-label {
+        font-weight: 500;
+    }
+    textarea.form-control {
+        min-height: 72px; /* Provides a slightly larger default height */
+        font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 0.9em;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">{{ _('Edit Shop Messages') }}</h1>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">{{ _('Messages Configuration') }}</h6>
+            
+            <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#documentationModal">
+                <i class="bi bi-info-circle me-1"></i>
+                {{ _('View Documentation') }}
+            </button>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('edit_messages') }}">
+                <div class="row">
+                    {% for key, value in messages.items()|sort %}
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ key }}" class="form-label">{{ key }}</label>
+                        <textarea class="form-control" id="{{ key }}" name="{{ key }}" rows="3">{{ value }}</textarea>
+                    </div>
+                    {% endfor %}
+                </div>
+                <hr>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save me-2"></i>{{ _('Save Messages and Restart Core') }}
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="documentationModal" tabindex="-1" aria-labelledby="documentationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="documentationModalLabel">{{ _('Documentation: Placeholders and Special Fields') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>{{ _('You can use the following placeholders in your message fields. They will be automatically replaced with dynamic values when displayed in Tinfoil.') }}</p>
+
+                <table class="table table-bordered table-striped table-sm table-placeholders">
+                    <thead class="thead-light">
+                        <tr>
+                            <th style="width: 20%;">{{ _('Placeholder') }}</th>
+                            <th>{{ _('Description') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>{shop_title}</code></td>
+                            <td>{{ _('Displays the title of your shop, as configured in the settings.') }}</td>
+                        </tr>
+                        <tr>
+                            <td><code>{user}</code></td>
+                            <td>{{ _("The nickname of the user currently Browse the shop.") }}</td>
+                        </tr>
+                        <tr>
+                            <td><code>{uid}</code></td>
+                            <td>{{ _("The unique ID (UID) linked to the user's account.") }}</td>
+                        </tr>
+                        <tr>
+                            <td><code>{ip}</code></td>
+                            <td>{{ _("The IP address of the user connecting to the shop.") }}</td>
+                        </tr>
+                         <tr>
+                            <td><code>{date}</code></td>
+                            <td>{{ _("The current server date (e.g., YYYY-MM-DD).") }}</td>
+                        </tr>
+                         <tr>
+                            <td><code>{time}</code></td>
+                            <td>{{ _("The current server time (e.g., HH:MM:SS).") }}</td>
+                        </tr>
+                         <tr>
+                            <td><code>{datetime}</code></td>
+                            <td>{{ _("The full current server date and time.") }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 class="mt-4">{{ _('Special Fields') }}</h4>
+                <p>
+                    {{ _('The field') }} <strong><code>BROWSER_FORBIDDEN</code></strong> {{ _('has special behavior and supports HTML tags. You can use this to display a custom formatted message to users trying to access the shop URL from a web browser instead of Tinfoil.') }}
+                </p>
+                <p>
+                    <strong>{{ _('Example:') }}</strong>
+                </p>
+                <pre><code>&lt;h1&gt;Access Denied&lt;/h1&gt;&lt;p&gt;This is a Tinfoil shop. Please access it using the Tinfoil application on your console.&lt;/p&gt;</code></pre>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Close') }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

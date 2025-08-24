@@ -1,0 +1,56 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ _('Settings') }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ _('Settings') }}</h1>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                {{ _('Core Settings') }}
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <div class="mb-3">
+                        <label for="core_port" class="form-label">{{ _('Core Port') }}</label>
+                        <input type="number" class="form-control" id="core_port" name="CORE_PORT" value="{{ config.CORE_PORT }}" required>
+                        <div class="form-text">
+                            {{ _('The network port that the core server (Tinfoil) will use.') }}
+                            <strong>{{ _('Attention:') }}</strong> {{ _('Changing this port will restart the core.') }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="core_public_url" class="form-label">{{ _('Core Public URL (Domain)') }}</label>
+                        <input type="text" class="form-control" id="core_public_url" name="CORE_PUBLIC_URL" value="{{ config.CORE_PUBLIC_URL }}" placeholder="{{ _('Ex: https://mydomain.com or http://192.168.10.4:%(port)s', port=config.CORE_PORT) }}">
+                        <div class="form-text">
+                            {{ _('Optional. If you use a domain or reverse proxy, enter the full URL here.') }}
+                            {{ _('If left blank, the default URL (IP:Port) will be used.') }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <button type="submit" class="btn btn-primary">{{ _('Save Changes and Restart Core') }}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="alert alert-info">
+            <h4 class="alert-heading">{{ _('Information') }}</h4>
+            <p>
+                {{ _('Any change in the Core settings will result in an automatic restart of the service for the new settings to be applied.') }}
+            </p>
+            <hr>
+            <p class="mb-0">
+                {{ _('Make sure the new port is not in use by another service.') }}
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

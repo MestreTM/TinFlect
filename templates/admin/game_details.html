@@ -1,0 +1,134 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+<a href="{{ url_for('library') }}" class="btn btn-outline-secondary mb-3">
+    <i class="bi bi-arrow-left me-2"></i>{{ _('Back to Library') }}
+</a>
+
+<div class="position-relative">
+    <div class="game-banner rounded" style="background-image: url('{{ game.get('bannerUrl') or game.get('iconUrl') or '' }}');"></div>
+    <div class="details-header">
+        <img src="{{ game.get('iconUrl') or 'https://via.placeholder.com/150/343a40/ffffff?text=Icon' }}" alt="Icon for {{ game.get('name') }}" class="game-icon">
+        <div class="title-section">
+            <h1 class="display-5 fw-bold">{{ game.get('name', _('Unknown Game')) }}</h1>
+            <p class="h5 text-muted">{{ game.get('publisher') or _('Unknown Publisher') }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-4">
+    <div class="col-lg-8">
+        <div class="card h-100">
+            <div class="card-body">
+                <h4 class="card-title mb-4">
+                    {{ _('Game Details') }}
+                    {% if game.get('exists_in_db') %}
+                        <span class="badge bg-success ms-2">{{ _('In shop') }}</span>
+                    {% else %}
+                        <span class="badge bg-danger ms-2">{{ _('Missing') }}</span>
+                    {% endif %}
+                </h4>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-3 text-muted">{{ _('Release') }}</div>
+                    <div class="col-sm-9">{{ format_date(game.get('releaseDate')) if game.get('releaseDate') else _('N/A') }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3 text-muted">{{ _('Players') }}</div>
+                    <div class="col-sm-9">{{ game.get('numberOfPlayers') or _('N/A') }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3 text-muted">{{ _('Size') }}</div>
+                    <div class="col-sm-9">{{ format_bytes(game.get('size')) }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3 text-muted">{{ _('TID') }}</div>
+                    <div class="col-sm-9">{{ game.get('id') }}</div>
+                </div>
+                 <div class="row mb-3">
+                    <div class="col-sm-3 text-muted">{{ _('Categories') }}</div>
+                    <div class="col-sm-9">
+                        {% if game.get('category') %}
+                            {% for cat in game.get('category', []) %}
+                                <span class="badge bg-secondary">{{ cat }}</span>
+                            {% endfor %}
+                        {% else %}
+                            {{ _('N/A') }}
+                        {% endif %}
+                    </div>
+                </div>
+                {% if game.get('description') %}
+                <hr>
+                <h5 class="mt-4">{{ _('Description') }}</h5>
+                <p class="text-muted">{{ game.get('description') }}</p>
+                {% endif %}
+
+                {% if game.get('screenshots') %}
+                <hr>
+                <h5 class="mt-4">{{ _('Gallery') }}</h5>
+                <div id="gallerySlider" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner rounded">
+                        {% for screenshot_url in game.get('screenshots', []) %}
+                        <div class="carousel-item {% if loop.first %}active{% endif %}">
+                            <img src="{{ screenshot_url }}" class="d-block w-100" alt="{{ _('Screenshot') }} {{ loop.index }}">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if game.get('screenshots')|length > 1 %}
+                    <button class="carousel-control-prev" type="button" data-bs-target="#gallerySlider" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">{{ _('Previous') }}</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#gallerySlider" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">{{ _('Next') }}</span>
+                    </button>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">{{ _('Updates') }}</div>
+            <ul class="list-group list-group-flush">
+                {% if updates %}
+                    {% for update in updates %}
+<li class="list-group-item d-flex justify-content-between align-items-center">
+    {{ update.name }} <small class="text-muted">({{ update.version_int }})</small>
+    {% if update.exists_in_db %}
+        <span class="badge bg-success">{{ _('In shop') }}</span>
+    {% else %}
+        <span class="badge bg-secondary">{{ _('No') }}</span>
+    {% endif %}
+</li>
+{% endfor %}
+                {% else %}
+                    <li class="list-group-item text-muted">{{ _('No updates found.') }}</li>
+                {% endif %}
+            </ul>
+        </div>
+        <div class="card">
+            <div class="card-header">{{ _('Additional Content (DLC)') }}</div>
+            <ul class="list-group list-group-flush">
+                {% if dlcs %}
+                    {% for dlc in dlcs %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{{ url_for('library_game_details', game_id=dlc.id) }}" class="text-decoration-none text-white stretched-link">{{ dlc.name }}</a>
+                        {% if dlc.exists_in_db %}
+                            <span class="badge bg-success">{{ _('In shop') }}</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ _('No') }}</span>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                {% else %}
+                    <li class="list-group-item text-muted">{{ _('No DLCs found.') }}</li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

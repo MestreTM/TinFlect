@@ -1,0 +1,107 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ _('Settings') }}{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ _('Settings') }}</h1>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                {{ _('Core and Shop Settings') }}
+            </div>
+            <div class="card-body">
+                <form method="post" id="settings-form">
+                    <div class="mb-3">
+                        <label for="shop_title" class="bi bi-shop-window form-label"> {{ _('Shop Title') }}</label>
+                        <input type="text" class="form-control" id="shop_title" name="SHOP_TITLE" 
+                               value="{{ config.SHOP_TITLE | default('') }}" 
+                               placeholder="Tinfoil Shop">
+                        <div class="form-text">
+                            {{ _('The name of your shop that will be displayed in the interface.') }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <h5 class="mb-4">{{ _('Core Network Settings') }}</h5>
+
+                    <div class="mb-3">
+                        <label for="core_port" class="bi bi-ethernet me-2 form-label"> {{ _('Core Port') }}</label>
+                        <input type="number" class="form-control" id="core_port" name="CORE_PORT" 
+                               value="{{ config.CORE_PORT | default('') }}" 
+                               placeholder="8080" required>
+                        <div class="form-text">
+                            {{ _('The network port that the core server (Tinfoil) will use.') }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="core_public_url" class="bi bi-globe form-label"> {{ _('Core Public URL (Domain)') }}</label>
+                        <input type="text" class="form-control" id="core_public_url" name="CORE_PUBLIC_URL" 
+                               value="{{ config.CORE_PUBLIC_URL | default('') }}">
+                        <div class="form-text">
+                            {{ _('Optional. If you use a domain or reverse proxy, enter the full URL here (without a trailing slash).') }}
+                            {{ _('If left blank, the default URL (server IP:Port) will be used.') }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <button type="submit" class="btn btn-primary">{{ _('Save Changes and Restart Core') }}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="alert alert-info">
+            <h4 class="alert-heading">{{ _('Information') }}</h4>
+            <p>
+                {{ _('Any change in these settings will result in an automatic restart of the service for the new settings to be applied.') }}
+            </p>
+            <hr>
+            <p class="mb-0 bi bi-exclamation-triangle-fill">
+                {{ _('Make sure the new port is not in use by another service and is open in the firewall.') }}
+            </p>
+            <hr>
+            <p class="mb-0 bi bi-info-circle-fill">
+                {{ _('You can use https by using nginx, apache, or caddy as a reverse proxy.') }}
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const corePortInput = document.getElementById('core_port');
+        const corePublicUrlInput = document.getElementById('core_public_url');
+        const shopTitleInput = document.getElementById('shop_title');
+        const form = document.getElementById('settings-form');
+
+        function updatePlaceholder() {
+            const port = corePortInput.value || '8080';
+            corePublicUrlInput.placeholder = {{ _('Ex: https://mydomain.com or http://192.168.10.4 (external)')|tojson }};
+        }
+
+        updatePlaceholder();
+
+        corePortInput.addEventListener('input', updatePlaceholder);
+
+        form.addEventListener('submit', function(event) {
+            if (shopTitleInput.value === shopTitleInput.placeholder) {
+                shopTitleInput.value = '';
+            }
+            if (corePublicUrlInput.value === corePublicUrlInput.placeholder) {
+                corePublicUrlInput.value = '';
+            }
+        });
+    });
+</script>
+{% endblock %}

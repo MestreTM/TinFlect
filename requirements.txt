@@ -1,0 +1,7 @@
+Flask==2.0.3
+flask_babel==4.0.0
+nstools==1.2.3
+pycryptodome==3.14.1
+Requests==2.32.5
+waitress==3.0.2
+watchdog==2.1.9

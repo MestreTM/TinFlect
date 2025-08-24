@@ -1,0 +1,485 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<style>
+    .user-details-row td {
+        padding: 0 !important;
+        border: none !important;
+        background-color: var(--dark-bg) !important;
+    }
+    .user-details-content {
+        background-color: rgba(0,0,0,0.15);
+        border-left: 3px solid var(--primary);
+    }
+    .uid-status-cell[data-bs-target] { cursor: pointer; }
+</style>
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ _('Profile Management') }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <button class="btn btn-sm btn-outline-secondary me-2" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse">
+            <i class="bi bi-filter me-1"></i>{{ _('Filter') }}
+        </button>
+        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#createUserModal">
+            <i class="bi bi-plus-circle me-1"></i>{{ _('New User') }}
+        </button>
+    </div>
+</div>
+
+<ul class="nav nav-tabs mb-3" id="profileTabs" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="tab-users-tab" data-bs-toggle="tab" data-bs-target="#tab-users" type="button" role="tab" aria-controls="tab-users" aria-selected="true">
+        <i class="bi bi-people me-1"></i>{{ _('Registered Users') }}
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="tab-downloads-tab" data-bs-toggle="tab" data-bs-target="#tab-downloads" type="button" role="tab" aria-controls="tab-downloads" aria-selected="false">
+        <i class="bi bi-cloud-download me-1"></i>{{ _('User Downloads') }}
+    </button>
+  </li>
+</ul>
+
+<div class="collapse" id="filterCollapse">
+    <div class="card card-body mb-3">
+        <div class="row">
+            <div class="col-md-6">
+                <label for="filter-name" class="form-label">{{ _('Filter by Name') }}</label>
+                <input type="text" id="filter-name" class="form-control" placeholder="{{ _('Enter a name to search...') }}">
+            </div>
+            <div class="col-md-6">
+                <label for="filter-uid" class="form-label">{{ _('Filter by UID Status') }}</label>
+                <select id="filter-uid" class="form-select">
+                    <option value="all" selected>{{ _('All') }}</option>
+                    <option value="linked">{{ _('Linked') }}</option>
+                    <option value="unlinked">{{ _('Not linked') }}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="tab-content" id="profileTabsContent">
+    <div class="tab-pane fade show active" id="tab-users" role="tabpanel" aria-labelledby="tab-users-tab">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-people me-2"></i>{{ _('Registered Users') }}
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover" id="users-table">
+                                <thead>
+                                    <tr>
+                                        <th>{{ _('ID') }}</th>
+                                        <th>{{ _('Name') }}</th>
+                                        <th>{{ _('UID Linked') }}</th>
+                                        <th>{{ _('Created At') }}</th>
+                                        <th>{{ _('UID Linked At') }}</th>
+                                        <th>{{ _('Actions') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users %}
+                                    {% set is_banned = user['banned'] if 'banned' in user.keys() else 0 %}
+                                    <tr class="user-main-row"
+                                        data-nickname="{{ user['nickname'] | e }}"
+                                        data-uid-status="{% if user['uid'] %}linked{% else %}unlinked{% endif %}">
+                                        <td>{{ user['id'] }}</td>
+                                        <td>
+                                            {{ user['nickname'] }}
+                                            {% if is_banned %}
+                                                <span class="badge bg-danger ms-2">{{ _('Banned') }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="uid-status-cell"
+                                            {% if user['uid'] %}
+                                                data-bs-target="#details-{{ user['id'] }}"
+                                                aria-expanded="false"
+                                                aria-controls="details-{{ user['id'] }}"
+                                                title="{{ _('Click to view details') }}"
+                                            {% endif %}>
+                                            {% if user['uid'] %}
+                                                <span class="badge bg-success">{{ _('Linked') }}</span>
+                                                <i class="bi bi-info-circle ms-2 text-muted"></i>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ _('Not linked') }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ format_date(user['created_at']) if user['created_at'] else 'N/A' }}</td>
+                                        <td>{{ format_date(user['uid_linked_at']) if user['uid_linked_at'] else _('N/A') }}</td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <button class="btn btn-sm btn-outline-info btn-share-access" data-user-name="{{ user['nickname'] }}" title="{{ _('Share access data') }}"><i class="bi bi-share me-1"></i>{{ _('Share') }}</button>
+                                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#changePasswordModal" data-user-id="{{ user['id'] }}" data-user-name="{{ user['nickname'] }}"><i class="bi bi-key me-1"></i>{{ _('Change Password') }}</button>
+                                                {% if user['id'] != 1 %}
+                                                    {% if is_banned %}
+                                                        <form method="POST" action="{{ url_for('unban_user') }}" class="d-inline">
+                                                            <input type="hidden" name="user_id" value="{{ user['id'] }}">
+                                                            <button class="btn btn-sm btn-outline-success" title="{{ _('Unban user') }}"><i class="bi bi-unlock me-1"></i>{{ _('Unban') }}</button>
+                                                        </form>
+                                                    {% else %}
+                                                        <form method="POST" action="{{ url_for('ban_user') }}" class="d-inline">
+                                                            <input type="hidden" name="user_id" value="{{ user['id'] }}">
+                                                            <button class="btn btn-sm btn-outline-warning" title="{{ _('Ban user') }}"><i class="bi bi-slash-circle me-1"></i>{{ _('Ban') }}</button>
+                                                        </form>
+                                                    {% endif %}
+                                                    <form method="POST" action="{{ url_for('clear_user_quota') }}" class="d-inline">
+                                                        <input type="hidden" name="user_id" value="{{ user['id'] }}">
+                                                        <button class="btn btn-sm btn-outline-secondary" title="{{ _('Clear daily quota') }}" {% if not user['uid'] %}disabled{% endif %}>
+                                                            <i class="bi bi-eraser me-1"></i>{{ _('Clear quota') }}
+                                                        </button>
+                                                    </form>
+                                                    <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteUserModal" data-user-id="{{ user['id'] }}" data-user-name="{{ user['nickname'] }}"><i class="bi bi-trash me-1"></i>{{ _('Delete') }}</button>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% if user['uid'] %}
+                                    <tr id="details-{{ user['id'] }}" class="collapse user-details-row">
+                                        <td colspan="6">
+                                            <div class="user-details-content p-3">
+                                                <div class="row align-items-center">
+                                                    <div class="col-md-8">
+                                                        <strong>{{ _('UID (Device ID)') }}:</strong>
+                                                        <div class="input-group input-group-sm mt-1">
+                                                            <input type="text" class="form-control" value="{{ user['uid'] }}" readonly>
+                                                            <button class="btn btn-outline-secondary btn-copy-uid" type="button" title="{{ _('Copy UID') }}">
+                                                                <i class="bi bi-clipboard me-1"></i>{{ _('Copy') }}
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4 text-md-end mt-2 mt-md-0">
+                                                        <small class="text-muted">{{ _('Linked at:') }}<br>{{ format_date(user['uid_linked_at']) }}</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="6" class="text-center">{{ _('No users found') }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-tab">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-cloud-download me-2"></i>{{ _('User Downloads') }}
+            </div>
+            <div class="card-body">
+                <p class="text-muted">
+                    {{ _('Manage daily download quota per user. Clearing the quota resets today’s counter for that user.') }}
+                </p>
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle" id="downloads-table">
+                        <thead>
+                            <tr>
+                                <th>{{ _('ID') }}</th>
+                                <th>{{ _('Name') }}</th>
+                                <th>{{ _('UID') }}</th>
+                                <th>{{ _('Downloads today') }}</th>
+                                <th>{{ _('Tools') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr data-uid="{{ user['uid'] or '' }}" data-user-id="{{ user['id'] }}" data-nickname="{{ user['nickname'] }}">
+                                <td>{{ user['id'] }}</td>
+                                <td>{{ user['nickname'] }}</td>
+                                <td>
+                                    {% if user['uid'] %}
+                                        <code>{{ user['uid'] }}</code>
+                                    {% else %}
+                                        <span class="text-muted">{{ _('Not linked') }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user['uid'] %}
+                                        <span class="badge bg-primary download-count" data-uid="{{ user['uid'] }}">0</span>
+                                    {% else %}
+                                        <span class="text-muted">—</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <form method="POST" action="{{ url_for('clear_user_quota') }}" class="d-inline">
+                                            <input type="hidden" name="user_id" value="{{ user['id'] }}">
+                                            <button class="btn btn-sm btn-outline-secondary" {% if not user['uid'] %}disabled{% endif %}>
+                                                <i class="bi bi-eraser me-1"></i>{{ _('Clear daily quota') }}
+                                            </button>
+                                        </form>
+                                        <button class="btn btn-sm btn-outline-info btn-details" {% if not user['uid'] %}disabled{% endif %}>
+                                            <i class="bi bi-list-ul me-1"></i>{{ _('Details') }}
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="5" class="text-center">{{ _('No users found') }}</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <small class="text-muted d-block mt-2">
+                    <i class="bi bi-info-circle me-1"></i>
+                    {{ _('Daily counts are tracked in the "quote" table of users_downloads.db.') }}
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createUserModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><form method="POST" action="{{ url_for('create_user') }}"><div class="modal-header"><h5 class="modal-title">{{ _('Create New User') }}</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><div class="mb-3"><label for="username" class="form-label">{{ _('Username') }}</label><input type="text" class="form-control" id="username" name="username" required><div class="form-text">{{ _('The password will be generated automatically') }}</div></div></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button><button type="submit" class="btn btn-primary">{{ _('Create User') }}</button></div></form></div></div></div>
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><form method="POST" action="{{ url_for('change_password') }}"><input type="hidden" id="change-user-id" name="user_id"><div class="modal-header"><h5 class="modal-title">{{ _('Change User Password') }}</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><p>{{ _('You are changing the password for user:') }} <strong id="change-user-name"></strong></p><div class="mb-3"><label for="new_password" class="form-label">{{ _('New Password') }}</label><input type="password" class="form-control" id="new_password" name="new_password" required></div></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button><button type="submit" class="btn btn-primary">{{ _('Change Password') }}</button></div></form></div></div></div>
+<div class="modal fade" id="deleteUserModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><form method="POST" action="{{ url_for('delete_user') }}"><input type="hidden" id="delete-user-id" name="user_id"><div class="modal-header"><h5 class="modal-title">{{ _('Confirm Deletion') }}</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><p>{{ _('Are you sure you want to delete the user') }} <strong id="delete-user-name"></strong>?</p><p class="text-danger"><i class="bi bi-exclamation-triangle me-2"></i>{{ _('This action cannot be undone!') }}</p></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button><button type="submit" class="btn btn-danger">{{ _('Delete User') }}</button></div></form></div></div></div>
+
+<div class="modal fade" id="downloadsDetailModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-list-ul me-2"></i>{{ _('Today\'s Downloads') }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <thead>
+              <tr>
+                <th>{{ _('Time') }}</th>
+                <th>{{ _('Title') }}</th>
+                <th>{{ _('Size') }}</th>
+                <th>{{ _('Status') }}</th>
+              </tr>
+            </thead>
+            <tbody id="downloads-detail-body">
+              <tr><td colspan="4" class="text-muted text-center">{{ _('No downloads today') }}</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="downloadsDetailCloseBtn"
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal">
+          {{ _('Close') }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const changePasswordModal = document.getElementById('changePasswordModal');
+    if(changePasswordModal) {
+        changePasswordModal.addEventListener('show.bs.modal', function(event) {
+            const btn = event.relatedTarget;
+            this.querySelector('#change-user-id').value = btn.getAttribute('data-user-id');
+            this.querySelector('#change-user-name').textContent = btn.getAttribute('data-user-name');
+        });
+    }
+    const deleteUserModal = document.getElementById('deleteUserModal');
+    if(deleteUserModal) {
+        deleteUserModal.addEventListener('show.bs.modal', function(event) {
+            const btn = event.relatedTarget;
+            this.querySelector('#delete-user-id').value = btn.getAttribute('data-user-id');
+            this.querySelector('#delete-user-name').textContent = btn.getAttribute('data-user-name');
+        });
+    }
+
+    const shopTitle = "{{ config.SHOP_TITLE | default('Tinfoil Shop') | e }}";
+    const shopHost = "{{ (config.CORE_PUBLIC_URL | replace('https://', '') | replace('http://', '') if config.CORE_PUBLIC_URL else request.host.split(':')[0]) | e }}";
+    const shopPort = "{{ config.CORE_PORT if not config.CORE_PUBLIC_URL else '' }}";
+
+    function showCopyFeedback(button) {
+        const originalHtml = button.innerHTML;
+        const feedbackText = {{ _('Copied!')|tojson }};
+        button.innerHTML = `<i class="bi bi-check-lg me-1"></i>${feedbackText}`;
+        button.disabled = true;
+        setTimeout(() => { button.innerHTML = originalHtml; button.disabled = false; }, 2000);
+    }
+    function copyToClipboard(text, button) {
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(() => showCopyFeedback(button));
+        } else {
+            const ta = document.createElement('textarea');
+            ta.value = text; ta.style.position = 'fixed'; ta.style.top = '-9999px';
+            document.body.appendChild(ta); ta.select();
+            try { document.execCommand('copy'); showCopyFeedback(button); } catch (err) { console.error('Copy failed:', err); }
+            document.body.removeChild(ta);
+        }
+    }
+
+    // Copiar credenciais do alerta de sucesso (user criado)
+    document.querySelectorAll('.alert-success').forEach(alert => {
+        const txt = alert.textContent || alert.innerText;
+        const re = /User "([^"]+)" created successfully! Password: (\S+)/;
+        const m = txt.match(re);
+        if (m) {
+            const [, u, p] = m;
+            const btn = document.createElement('button');
+            btn.innerHTML = `<i class="bi bi-clipboard me-1"></i> ${ {{_('Copy Credentials')|tojson}} }`;
+            btn.className = 'btn btn-sm btn-light ms-3';
+            btn.addEventListener('click', () => {
+                let s = `👾 *${ {{_('Access Data')|tojson}} } ${shopTitle}* 👾\n---------------------------------\n${ {{_('Protocol')|tojson}} }: http\n${ {{_('Host')|tojson}} }: ${shopHost}\n`;
+                if (shopPort) s += `${ {{_('Port')|tojson}} }: ${shopPort}\n`;
+                s += `${ {{_('Path')|tojson}} }: /\n${ {{_('User')|tojson}} }: ${u}\n${ {{_('Password')|tojson}} }: ${p}\n${ {{_('Title')|tojson}} }: ${shopTitle}\n---------------------------------\n${ {{_('Warning - Access is linked to your console, do not share!')|tojson}} }\n`;
+                copyToClipboard(s.trim(), btn);
+            });
+            alert.appendChild(btn);
+        }
+    });
+
+    // Filtro da tabela (Registered Users)
+    const filterNameInput = document.getElementById('filter-name');
+    const filterUidSelect = document.getElementById('filter-uid');
+    const userRows = document.querySelectorAll('#users-table tbody tr.user-main-row');
+    function applyFilters() {
+        const nameFilter = (filterNameInput?.value || '').toLowerCase();
+        const uidFilter = filterUidSelect?.value || 'all';
+        userRows.forEach(row => {
+            const nickname = row.dataset.nickname.toLowerCase();
+            const uidStatus = row.dataset.uidStatus;
+            const show = nickname.includes(nameFilter) && (uidFilter === 'all' || uidFilter === uidStatus);
+            row.style.display = show ? '' : 'none';
+            const detailsRow = row.nextElementSibling;
+            if (detailsRow && detailsRow.classList.contains('user-details-row') && !show) detailsRow.classList.remove('show');
+        });
+    }
+    filterNameInput?.addEventListener('keyup', applyFilters);
+    filterUidSelect?.addEventListener('change', applyFilters);
+
+    // Expand / copy UID (Registered Users)
+    const userTableBody = document.querySelector('#users-table tbody');
+    userTableBody?.addEventListener('click', (e) => {
+        const shareButton = e.target.closest('.btn-share-access');
+        if (shareButton) {
+            e.stopPropagation();
+            const userName = shareButton.dataset.userName;
+            let s = `👾 *${ {{_('Access Data')|tojson}} } ${shopTitle}* 👾\n---------------------------------\n${ {{_('Protocol')|tojson}} }: http\n${ {{_('Host')|tojson}} }: ${shopHost}\n`;
+            if (shopPort) s += `${ {{_('Port')|tojson}} }: ${shopPort}\n`;
+            s += `${ {{_('Path')|tojson}} }: /\n${ {{_('User')|tojson}} }: ${userName}\n${ {{_('Password')|tojson}} }: ${ {{_('(the user\'s current password)')|tojson}} }\n${ {{_('Title')|tojson}} }: ${shopTitle}\n---------------------------------\n${ {{_('Warning - Access is linked to your console, do not share!')|tojson}} }\n`;
+            copyToClipboard(s.trim(), shareButton);
+            return;
+        }
+        const copyUidBtn = e.target.closest('.btn-copy-uid');
+        if (copyUidBtn) {
+            e.stopPropagation();
+            const uidInput = copyUidBtn.previousElementSibling;
+            copyToClipboard(uidInput.value, copyUidBtn);
+            return;
+        }
+        const triggerCell = e.target.closest('.uid-status-cell[data-bs-target]');
+        if (triggerCell) {
+            const sel = triggerCell.getAttribute('data-bs-target');
+            const detailsRow = document.querySelector(sel);
+            if (detailsRow) {
+                detailsRow.classList.toggle('show');
+                triggerCell.setAttribute('aria-expanded', detailsRow.classList.contains('show'));
+            }
+        }
+    });
+
+    // -------- User Downloads (counters + details) --------
+    const downloadsTable = document.getElementById('downloads-table');
+    const detailModalEl = document.getElementById('downloadsDetailModal');
+    const detailModal = new bootstrap.Modal(detailModalEl);
+    const detailBody  = document.getElementById('downloads-detail-body');
+
+    // Fallback explícito para fechar o modal (caso algum handler bloqueie o data-bs-dismiss)
+    const detailCloseBtn = document.getElementById('downloadsDetailCloseBtn');
+    if (detailCloseBtn) {
+        detailCloseBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            try { detailModal.hide(); } catch (_) {}
+        });
+    }
+
+    // Carrega contagens do dia
+    async function loadDailyCounts() {
+        try {
+            const res = await fetch('{{ url_for("api_quote_list") }}', {headers: {'X-Requested-With':'fetch'}});
+            if (!res.ok) return;
+            const data = await res.json(); // {items:[{uid, count}]}
+            (data.items || []).forEach(it => {
+                if (!it.uid) return;
+                const badge = document.querySelector(`.download-count[data-uid="${it.uid}"]`);
+                if (badge) badge.textContent = it.count ?? 0;
+            });
+        } catch (e) {
+            console.error('Failed to load daily counts:', e);
+        }
+    }
+
+    // Abre modal de detalhes
+    async function openDetails(uid, nickname) {
+        detailBody.innerHTML = `<tr><td colspan="4" class="text-muted text-center">{{ _('Loading...') }}</td></tr>`;
+        try {
+            const url = new URL('{{ url_for("api_quote_details") }}', window.location.origin);
+            url.searchParams.set('uid', uid);
+            const res = await fetch(url.toString(), {headers: {'X-Requested-With':'fetch'}});
+            let rowsHtml = '';
+            if (res.ok) {
+                const data = await res.json(); // {items:[{game_name,file_size,downloaded_at,completed}]}
+                const items = data.items || [];
+                if (items.length === 0) {
+                    rowsHtml = `<tr><td colspan="4" class="text-muted text-center">{{ _('No downloads today') }}</td></tr>`;
+                } else {
+                    rowsHtml = items.map(it => {
+                        const when = it.downloaded_at || '';
+                        const title = it.game_name || '';
+                        const size = it.file_size_human || it.file_size || '';
+                        const status = it.completed ? '{{ _("Completed") }}' : '{{ _("In progress") }}';
+                        const badgeClass = it.completed ? 'bg-success' : 'bg-warning text-dark';
+                        return `<tr>
+                            <td>${when}</td>
+                            <td>${title}</td>
+                            <td>${size}</td>
+                            <td><span class="badge ${badgeClass}">${status}</span></td>
+                        </tr>`;
+                    }).join('');
+                }
+            } else {
+                rowsHtml = `<tr><td colspan="4" class="text-danger text-center">{{ _('Failed to load details') }}</td></tr>`;
+            }
+            detailBody.innerHTML = rowsHtml;
+            document.querySelector('#downloadsDetailModal .modal-title').innerHTML =
+                `<i class="bi bi-list-ul me-2"></i>{{ _("Today's Downloads") }} — ${nickname}`;
+            detailModal.show();
+        } catch (e) {
+            console.error('Failed to load details:', e);
+            detailBody.innerHTML = `<tr><td colspan="4" class="text-danger text-center">{{ _('Failed to load details') }}</td></tr>`;
+            detailModal.show();
+        }
+    }
+
+    // Handler dos botões "Details"
+    downloadsTable?.addEventListener('click', (e) => {
+        const btn = e.target.closest('.btn-details');
+        if (!btn) return;
+        const row = btn.closest('tr');
+        const uid = row?.dataset.uid || '';
+        const nickname = row?.dataset.nickname || '';
+        if (uid) openDetails(uid, nickname);
+    });
+
+    // Carrega contagens ao abrir a aba "User Downloads"
+    const downloadsTabBtn = document.getElementById('tab-downloads-tab');
+    downloadsTabBtn?.addEventListener('shown.bs.tab', loadDailyCounts);
+});
+</script>
+{% endblock %}

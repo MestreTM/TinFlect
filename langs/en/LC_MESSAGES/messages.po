@@ -1,0 +1,1410 @@
+# English translations for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-08-24 13:56-0300\n"
+"PO-Revision-Date: 2025-08-24 12:19-0300\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: app/library.py:78
+msgid "Game not found in the TitleDB database."
+msgstr ""
+
+#: app/models.py:138
+msgid "Unknown Base Game"
+msgstr ""
+
+#: app/models.py:154
+#, python-format
+msgid "Update %(version)s"
+msgstr ""
+
+#: app/models.py:172
+#, python-format
+msgid "Unknown DLC (%(id)s)"
+msgstr ""
+
+#: app/routes.py:141
+msgid "Admin user created"
+msgstr ""
+
+#: app/routes.py:160
+msgid "Please log in to access this page"
+msgstr ""
+
+#: app/routes.py:190
+msgid "Global language changed and data reloaded."
+msgstr ""
+
+#: app/routes.py:192
+msgid "Failed to reload data after language change."
+msgstr ""
+
+#: app/routes.py:193
+msgid ""
+"Language changed, but failed to reload data. Please restart the "
+"application."
+msgstr ""
+
+#: app/routes.py:198
+msgid "An error occurred while trying to change the global language."
+msgstr ""
+
+#: app/routes.py:213
+msgid "Banned user attempted login"
+msgstr ""
+
+#: app/routes.py:214
+msgid "Your account is banned."
+msgstr ""
+
+#: app/routes.py:221
+msgid "Login successful"
+msgstr ""
+
+#: app/routes.py:224
+msgid "Failed login attempt"
+msgstr ""
+
+#: app/routes.py:225
+msgid "Invalid credentials. Please try again."
+msgstr ""
+
+#: app/routes.py:232
+msgid "User logged out"
+msgstr ""
+
+#: app/routes.py:234
+msgid "You have been successfully logged out."
+msgstr ""
+
+#: app/routes.py:266 app/routes.py:292 app/routes.py:318
+msgid "User identifier is required."
+msgstr ""
+
+#: app/routes.py:277
+msgid "User banned"
+msgstr ""
+
+#: app/routes.py:278
+msgid "User has been banned."
+msgstr ""
+
+#: app/routes.py:281
+#, python-format
+msgid "Error banning user: %(error)s"
+msgstr ""
+
+#: app/routes.py:303
+msgid "User unbanned"
+msgstr ""
+
+#: app/routes.py:304
+msgid "User has been unbanned."
+msgstr ""
+
+#: app/routes.py:307
+#, python-format
+msgid "Error unbanning user: %(error)s"
+msgstr ""
+
+#: app/routes.py:330 app/routes.py:405
+msgid "User not found."
+msgstr ""
+
+#: app/routes.py:335
+msgid "User does not have a linked UID. Cannot clear quota."
+msgstr ""
+
+#: app/routes.py:339
+#, python-format
+msgid "Daily download quota reset for \"%(nickname)s\""
+msgstr ""
+
+#: app/routes.py:340
+#, python-format
+msgid "Daily quota reset for \"%(nickname)s\"."
+msgstr ""
+
+#: app/routes.py:342
+#, python-format
+msgid "Failed to reset quota: %(error)s"
+msgstr ""
+
+#: app/routes.py:345
+#, python-format
+msgid "Error clearing quota: %(error)s"
+msgstr ""
+
+#: app/routes.py:354
+msgid "Username is required."
+msgstr ""
+
+#: app/routes.py:363
+#, python-format
+msgid "User \"%(username)s\" created"
+msgstr ""
+
+#: app/routes.py:364
+#, python-format
+msgid "User \"%(username)s\" created successfully! Password: %(password)s"
+msgstr ""
+
+#: app/routes.py:366
+#, python-format
+msgid "User \"%(username)s\" already exists."
+msgstr ""
+
+#: app/routes.py:376
+msgid "New password is required."
+msgstr ""
+
+#: app/routes.py:385
+#, python-format
+msgid "Password changed for \"%(nickname)s\""
+msgstr ""
+
+#: app/routes.py:386
+#, python-format
+msgid "Password for \"%(nickname)s\" changed successfully."
+msgstr ""
+
+#: app/routes.py:394
+msgid "The \"admin\" user (ID 1) cannot be deleted."
+msgstr ""
+
+#: app/routes.py:402
+#, python-format
+msgid "User \"%(nickname)s\" deleted"
+msgstr ""
+
+#: app/routes.py:403
+#, python-format
+msgid "User \"%(nickname)s\" deleted successfully."
+msgstr ""
+
+#: app/routes.py:414
+msgid "Log file not found."
+msgstr ""
+
+#: app/routes.py:424
+msgid "Shop core restarted"
+msgstr ""
+
+#: app/routes.py:425
+msgid "Shop core restarted successfully."
+msgstr ""
+
+#: app/routes.py:435
+msgid "Tinfoil server started successfully."
+msgstr ""
+
+#: app/routes.py:437
+msgid "Tinfoil server stopped successfully."
+msgstr ""
+
+#: app/routes.py:439
+msgid "Tinfoil server status changed."
+msgstr ""
+
+#: app/routes.py:538
+msgid "Game file not found."
+msgstr ""
+
+#: app/routes.py:540
+#, python-format
+msgid "Error downloading game: %(error)s"
+msgstr ""
+
+#: app/routes.py:556
+#, python-format
+msgid "Game removed: %(name)s (TID: %(tid)s)"
+msgstr ""
+
+#: app/routes.py:557
+#, python-format
+msgid "Game \"%(name)s\" removed successfully."
+msgstr ""
+
+#: app/routes.py:558
+msgid "Game not found."
+msgstr ""
+
+#: app/routes.py:561
+#, python-format
+msgid "Error removing game: %(error)s"
+msgstr ""
+
+#: app/routes.py:592
+msgid "Core settings changed. Restarting core..."
+msgstr ""
+
+#: app/routes.py:594
+msgid "Settings saved successfully! The core server is being restarted."
+msgstr ""
+
+#: app/routes.py:596
+#, python-format
+msgid "Failed to save settings: %(error)s"
+msgstr ""
+
+#: app/routes.py:597
+#, python-format
+msgid "Error saving settings: %(error)s"
+msgstr ""
+
+#: app/routes.py:613
+#, python-format
+msgid "Error creating backup file: %(error)s"
+msgstr ""
+
+#: app/routes.py:621
+msgid "Message file updated. Restarting core..."
+msgstr ""
+
+#: app/routes.py:623
+msgid ""
+"Messages saved successfully! The core server is being restarted "
+"automatically."
+msgstr ""
+
+#: app/routes.py:625
+#, python-format
+msgid "Failed to save message file: %(error)s"
+msgstr ""
+
+#: app/routes.py:626
+#, python-format
+msgid "Error saving messages: %(error)s"
+msgstr ""
+
+#: app/routes.py:632
+msgid "Message file (messages.json) not found in the project root."
+msgstr ""
+
+#: app/routes.py:635
+msgid ""
+"Error reading messages.json. The file might be corrupted. Check the file "
+"format."
+msgstr ""
+
+#: app/routes.py:642
+msgid "File Watcher"
+msgstr ""
+
+#: app/routes.py:653
+msgid "File watcher service started."
+msgstr ""
+
+#: app/routes.py:654
+msgid "Watcher started successfully."
+msgstr ""
+
+#: app/routes.py:660
+msgid "File watcher service stopped."
+msgstr ""
+
+#: app/routes.py:661
+msgid "Watcher stopped successfully."
+msgstr ""
+
+#: app/routes.py:669 app/routes.py:682
+msgid "Path is required."
+msgstr ""
+
+#: app/routes.py:671
+msgid "Directory added to watcher:"
+msgstr ""
+
+#: app/routes.py:672
+msgid "Directory added:"
+msgstr ""
+
+#: app/routes.py:674
+msgid "Failed to add directory. Check console logs for details."
+msgstr ""
+
+#: app/routes.py:684
+msgid "Directory removed from watcher:"
+msgstr ""
+
+#: app/routes.py:685
+msgid "Directory removed:"
+msgstr ""
+
+#: app/routes.py:687
+msgid "Directory not found in watch list."
+msgstr ""
+
+#: app/routes.py:693
+msgid "A scan is already in progress."
+msgstr ""
+
+#: app/routes.py:694
+msgid "Full library scan started in the background."
+msgstr ""
+
+#: app/routes.py:696
+msgid "Full scan started. Progress will be shown below."
+msgstr ""
+
+#: app/utils.py:10 app/utils.py:26 templates/admin/game_details.html:34
+#: templates/admin/game_details.html:38 templates/admin/game_details.html:56
+#: templates/admin/profile.html:110 templates/admin/stored_logs.html:118
+msgid "N/A"
+msgstr ""
+
+#: app/utils.py:21
+msgid "Invalid"
+msgstr ""
+
+#: templates/admin/admin.html:3 templates/admin/admin.html:7
+#: templates/admin/base.html:29 templates/admin/base.html:84
+#: templates/admin/settings.html:3 templates/admin/settings.html:8
+msgid "Settings"
+msgstr ""
+
+#: templates/admin/admin.html:14
+msgid "Core Settings"
+msgstr ""
+
+#: templates/admin/admin.html:19 templates/admin/settings.html:34
+msgid "Core Port"
+msgstr ""
+
+#: templates/admin/admin.html:22 templates/admin/settings.html:39
+msgid "The network port that the core server (Tinfoil) will use."
+msgstr ""
+
+#: templates/admin/admin.html:23
+msgid "Attention:"
+msgstr ""
+
+#: templates/admin/admin.html:23
+msgid "Changing this port will restart the core."
+msgstr ""
+
+#: templates/admin/admin.html:28 templates/admin/settings.html:44
+msgid "Core Public URL (Domain)"
+msgstr ""
+
+#: templates/admin/admin.html:29
+#, python-format
+msgid "Ex: https://mydomain.com or http://192.168.10.4:%(port)s"
+msgstr ""
+
+#: templates/admin/admin.html:31
+msgid "Optional. If you use a domain or reverse proxy, enter the full URL here."
+msgstr ""
+
+#: templates/admin/admin.html:32
+msgid "If left blank, the default URL (IP:Port) will be used."
+msgstr ""
+
+#: templates/admin/admin.html:38 templates/admin/settings.html:55
+msgid "Save Changes and Restart Core"
+msgstr ""
+
+#: templates/admin/admin.html:45 templates/admin/settings.html:62
+msgid "Information"
+msgstr ""
+
+#: templates/admin/admin.html:47
+msgid ""
+"Any change in the Core settings will result in an automatic restart of "
+"the service for the new settings to be applied."
+msgstr ""
+
+#: templates/admin/admin.html:51
+msgid "Make sure the new port is not in use by another service."
+msgstr ""
+
+#: templates/admin/base.html:6 templates/admin/base.html:123
+msgid "Admin Panel"
+msgstr ""
+
+#: templates/admin/base.html:16
+msgid "Admin"
+msgstr ""
+
+#: templates/admin/base.html:19
+msgid "Toggle navigation"
+msgstr ""
+
+#: templates/admin/base.html:24 templates/admin/base.html:78
+#: templates/admin/dashboard.html:5
+msgid "Dashboard"
+msgstr ""
+
+#: templates/admin/base.html:25 templates/admin/base.html:79
+msgid "Manage Profiles"
+msgstr ""
+
+#: templates/admin/base.html:26 templates/admin/base.html:80
+msgid "Library"
+msgstr ""
+
+#: templates/admin/base.html:27 templates/admin/base.html:81
+msgid "Manage Logs"
+msgstr ""
+
+#: templates/admin/base.html:28 templates/admin/base.html:82
+msgid " Edit Shop Messages"
+msgstr ""
+
+#: templates/admin/base.html:45 templates/admin/login.html:14
+#: templates/admin/logs.html:47 templates/admin/profile.html:339
+#: templates/admin/profile.html:374 templates/admin/stored_logs.html:34
+#: templates/admin/stored_logs.html:87
+msgid "User"
+msgstr ""
+
+#: templates/admin/base.html:48
+msgid "Logout"
+msgstr ""
+
+#: templates/admin/base.html:63 templates/admin/edit_messages.html:120
+#: templates/admin/profile.html:251 templates/admin/profile.html:275
+msgid "Close"
+msgstr ""
+
+#: templates/admin/base.html:76
+msgid "Menu"
+msgstr ""
+
+#: templates/admin/base.html:83
+msgid "Path Scanner - Watcher"
+msgstr ""
+
+#: templates/admin/base.html:88
+msgid "Tinfoil Access Data"
+msgstr ""
+
+#: templates/admin/base.html:90 templates/admin/profile.html:337
+#: templates/admin/profile.html:372
+msgid "Protocol"
+msgstr ""
+
+#: templates/admin/base.html:91 templates/admin/profile.html:337
+#: templates/admin/profile.html:372
+msgid "Host"
+msgstr ""
+
+#: templates/admin/base.html:92 templates/admin/dashboard.html:32
+#: templates/admin/profile.html:338 templates/admin/profile.html:373
+msgid "Port"
+msgstr ""
+
+#: templates/admin/base.html:93 templates/admin/profile.html:339
+#: templates/admin/profile.html:374 templates/admin/watcher.html:66
+msgid "Path"
+msgstr ""
+
+#: templates/admin/base.html:94 templates/admin/profile.html:259
+#: templates/admin/profile.html:339 templates/admin/profile.html:374
+msgid "Title"
+msgstr ""
+
+#: templates/admin/base.html:96
+msgid ""
+"For <strong>user</strong> and <strong>password</strong>, use the "
+"credentials from a profile created in the \"Manage Profiles\" tab."
+msgstr ""
+
+#: templates/admin/base.html:108
+msgid "Made with"
+msgstr ""
+
+#: templates/admin/dashboard.html:18
+msgid "Server Status"
+msgstr ""
+
+#: templates/admin/dashboard.html:23
+msgid "Shop Core"
+msgstr ""
+
+#: templates/admin/dashboard.html:26 templates/admin/dashboard.html:213
+msgid "Online"
+msgstr ""
+
+#: templates/admin/dashboard.html:26 templates/admin/dashboard.html:214
+msgid "Offline"
+msgstr ""
+
+#: templates/admin/dashboard.html:39
+msgid "Address for Tinfoil:"
+msgstr ""
+
+#: templates/admin/dashboard.html:57
+msgid "Shop Summary"
+msgstr ""
+
+#: templates/admin/dashboard.html:63
+msgid "Users"
+msgstr ""
+
+#: templates/admin/dashboard.html:69
+msgid "Games"
+msgstr ""
+
+#: templates/admin/dashboard.html:75
+msgid "Logs in Session"
+msgstr ""
+
+#: templates/admin/dashboard.html:81
+msgid "Updated at:"
+msgstr ""
+
+#: templates/admin/dashboard.html:90
+msgid "Quick Actions"
+msgstr ""
+
+#: templates/admin/dashboard.html:95
+msgid "Manage Users"
+msgstr ""
+
+#: templates/admin/dashboard.html:98
+msgid "Restart Tinfoil Server"
+msgstr ""
+
+#: templates/admin/dashboard.html:103 templates/admin/dashboard.html:215
+msgid "Stop Tinfoil Server"
+msgstr ""
+
+#: templates/admin/dashboard.html:103 templates/admin/dashboard.html:216
+msgid "Start Tinfoil Server"
+msgstr ""
+
+#: templates/admin/dashboard.html:115
+msgid "Real-time Log"
+msgstr ""
+
+#: templates/admin/dashboard.html:119
+msgid "Search..."
+msgstr ""
+
+#: templates/admin/dashboard.html:127
+msgid "All levels"
+msgstr ""
+
+#: templates/admin/dashboard.html:136
+msgid "All sources"
+msgstr ""
+
+#: templates/admin/dashboard.html:144
+msgid "Clear"
+msgstr ""
+
+#: templates/admin/dashboard.html:152 templates/admin/dashboard.html:211
+msgid "Waiting for events..."
+msgstr ""
+
+#: templates/admin/dashboard.html:157
+msgid "Monitoring system activities in real time"
+msgstr ""
+
+#: templates/admin/dashboard.html:167
+msgid "Recent Log Files"
+msgstr ""
+
+#: templates/admin/dashboard.html:174
+msgid "File Name"
+msgstr ""
+
+#: templates/admin/dashboard.html:175 templates/admin/logs.html:27
+msgid "Date"
+msgstr ""
+
+#: templates/admin/dashboard.html:176 templates/admin/game_details.html:41
+#: templates/admin/profile.html:260
+msgid "Size"
+msgstr ""
+
+#: templates/admin/dashboard.html:177 templates/admin/profile.html:79
+#: templates/admin/watcher.html:68
+msgid "Actions"
+msgstr ""
+
+#: templates/admin/dashboard.html:189
+msgid "View"
+msgstr ""
+
+#: templates/admin/dashboard.html:195
+msgid "No log files found"
+msgstr ""
+
+#: templates/admin/dashboard.html:210
+msgid "No logs found with the current filters"
+msgstr ""
+
+#: templates/admin/edit_messages.html:3 templates/admin/edit_messages.html:30
+msgid "Edit Shop Messages"
+msgstr ""
+
+#: templates/admin/edit_messages.html:34
+msgid "Messages Configuration"
+msgstr ""
+
+#: templates/admin/edit_messages.html:38
+msgid "View Documentation"
+msgstr ""
+
+#: templates/admin/edit_messages.html:53
+msgid "Save Messages and Restart Core"
+msgstr ""
+
+#: templates/admin/edit_messages.html:64
+msgid "Documentation: Placeholders and Special Fields"
+msgstr ""
+
+#: templates/admin/edit_messages.html:68
+msgid ""
+"You can use the following placeholders in your message fields. They will "
+"be automatically replaced with dynamic values when displayed in Tinfoil."
+msgstr ""
+
+#: templates/admin/edit_messages.html:73
+msgid "Placeholder"
+msgstr ""
+
+#: templates/admin/edit_messages.html:74 templates/admin/game_details.html:62
+msgid "Description"
+msgstr ""
+
+#: templates/admin/edit_messages.html:80
+msgid "Displays the title of your shop, as configured in the settings."
+msgstr ""
+
+#: templates/admin/edit_messages.html:84
+msgid "The nickname of the user currently Browse the shop."
+msgstr ""
+
+#: templates/admin/edit_messages.html:88
+msgid "The unique ID (UID) linked to the user's account."
+msgstr ""
+
+#: templates/admin/edit_messages.html:92
+msgid "The IP address of the user connecting to the shop."
+msgstr ""
+
+#: templates/admin/edit_messages.html:96
+msgid "The current server date (e.g., YYYY-MM-DD)."
+msgstr ""
+
+#: templates/admin/edit_messages.html:100
+msgid "The current server time (e.g., HH:MM:SS)."
+msgstr ""
+
+#: templates/admin/edit_messages.html:104
+msgid "The full current server date and time."
+msgstr ""
+
+#: templates/admin/edit_messages.html:109
+msgid "Special Fields"
+msgstr ""
+
+#: templates/admin/edit_messages.html:111
+msgid "The field"
+msgstr ""
+
+#: templates/admin/edit_messages.html:111
+msgid ""
+"has special behavior and supports HTML tags. You can use this to display "
+"a custom formatted message to users trying to access the shop URL from a "
+"web browser instead of Tinfoil."
+msgstr ""
+
+#: templates/admin/edit_messages.html:114
+msgid "Example:"
+msgstr ""
+
+#: templates/admin/game_details.html:5
+msgid "Back to Library"
+msgstr ""
+
+#: templates/admin/game_details.html:13
+msgid "Unknown Game"
+msgstr ""
+
+#: templates/admin/game_details.html:14
+msgid "Unknown Publisher"
+msgstr ""
+
+#: templates/admin/game_details.html:24
+msgid "Game Details"
+msgstr ""
+
+#: templates/admin/game_details.html:26 templates/admin/game_details.html:101
+#: templates/admin/game_details.html:120 templates/admin/library.html:48
+msgid "In shop"
+msgstr ""
+
+#: templates/admin/game_details.html:28 templates/admin/library.html:50
+msgid "Missing"
+msgstr ""
+
+#: templates/admin/game_details.html:33
+msgid "Release"
+msgstr ""
+
+#: templates/admin/game_details.html:37
+msgid "Players"
+msgstr ""
+
+#: templates/admin/game_details.html:45
+msgid "TID"
+msgstr ""
+
+#: templates/admin/game_details.html:49
+msgid "Categories"
+msgstr ""
+
+#: templates/admin/game_details.html:68
+msgid "Gallery"
+msgstr ""
+
+#: templates/admin/game_details.html:73
+msgid "Screenshot"
+msgstr ""
+
+#: templates/admin/game_details.html:80 templates/admin/library.html:67
+msgid "Previous"
+msgstr ""
+
+#: templates/admin/game_details.html:84 templates/admin/library.html:81
+msgid "Next"
+msgstr ""
+
+#: templates/admin/game_details.html:94
+msgid "Updates"
+msgstr ""
+
+#: templates/admin/game_details.html:103 templates/admin/game_details.html:122
+msgid "No"
+msgstr ""
+
+#: templates/admin/game_details.html:108
+msgid "No updates found."
+msgstr ""
+
+#: templates/admin/game_details.html:113
+msgid "Additional Content (DLC)"
+msgstr ""
+
+#: templates/admin/game_details.html:127
+msgid "No DLCs found."
+msgstr ""
+
+#: templates/admin/library.html:3 templates/admin/library.html:7
+msgid "Game Library"
+msgstr ""
+
+#: templates/admin/library.html:14
+msgid "Search by name or Title ID..."
+msgstr ""
+
+#: templates/admin/library.html:20
+msgid "All Categories"
+msgstr ""
+
+#: templates/admin/library.html:28
+msgid "All Publishers"
+msgstr ""
+
+#: templates/admin/library.html:42
+#, python-format
+msgid "Cover of %(game_name)s"
+msgstr ""
+
+#: templates/admin/library.html:44
+msgid "Unknown name"
+msgstr ""
+
+#: templates/admin/library.html:45
+msgid "Unknown publisher"
+msgstr ""
+
+#: templates/admin/library.html:58
+msgid "No games found with the current filters."
+msgstr ""
+
+#: templates/admin/library.html:64
+msgid "Library pagination"
+msgstr ""
+
+#: templates/admin/log_view.html:3
+#, python-format
+msgid "Log Viewer: %(filename)s"
+msgstr ""
+
+#: templates/admin/log_view.html:7
+msgid "Viewing Log:"
+msgstr ""
+
+#: templates/admin/log_view.html:8
+msgid "Back to Dashboard"
+msgstr ""
+
+#: templates/admin/log_view.html:15 templates/admin/logs.html:45
+#: templates/admin/stored_logs.html:82
+msgid "Date/Time"
+msgstr ""
+
+#: templates/admin/log_view.html:16 templates/admin/stored_logs.html:84
+msgid "Level"
+msgstr ""
+
+#: templates/admin/log_view.html:17 templates/admin/logs.html:9
+#: templates/admin/logs.html:48 templates/admin/stored_logs.html:25
+#: templates/admin/stored_logs.html:88
+msgid "Source"
+msgstr ""
+
+#: templates/admin/log_view.html:18 templates/admin/logs.html:49
+#: templates/admin/stored_logs.html:85
+msgid "Message"
+msgstr ""
+
+#: templates/admin/log_view.html:46
+msgid "No log content to display or the file is empty."
+msgstr ""
+
+#: templates/admin/login.html:9
+msgid "Administrative Access"
+msgstr ""
+
+#: templates/admin/login.html:18 templates/admin/profile.html:339
+#: templates/admin/profile.html:374
+msgid "Password"
+msgstr ""
+
+#: templates/admin/login.html:22 templates/admin/logs.html:23
+msgid "Login"
+msgstr ""
+
+#: templates/admin/login.html:27
+msgid "Access at:"
+msgstr ""
+
+#: templates/admin/logs.html:4
+msgid "System Logs"
+msgstr ""
+
+#: templates/admin/logs.html:11 templates/admin/logs.html:19
+#: templates/admin/logs.html:29 templates/admin/profile.html:52
+msgid "All"
+msgstr ""
+
+#: templates/admin/logs.html:17 templates/admin/logs.html:46
+#: templates/admin/stored_logs.html:83
+msgid "Type"
+msgstr ""
+
+#: templates/admin/logs.html:20
+msgid "Info"
+msgstr ""
+
+#: templates/admin/logs.html:21
+msgid "Warning"
+msgstr ""
+
+#: templates/admin/logs.html:22 templates/admin/watcher.html:205
+#: templates/admin/watcher.html:224
+msgid "Error"
+msgstr ""
+
+#: templates/admin/logs.html:36 templates/admin/profile.html:21
+#: templates/admin/stored_logs.html:64
+msgid "Filter"
+msgstr ""
+
+#: templates/admin/logs.html:50 templates/admin/stored_logs.html:86
+msgid "IP"
+msgstr ""
+
+#: templates/admin/logs.html:65 templates/admin/stored_logs.html:125
+msgid "No logs found"
+msgstr ""
+
+#: templates/admin/logs.html:86
+msgid "Clear Old Logs (30+ days)"
+msgstr ""
+
+#: templates/admin/profile.html:18
+msgid "Profile Management"
+msgstr ""
+
+#: templates/admin/profile.html:24
+msgid "New User"
+msgstr ""
+
+#: templates/admin/profile.html:32 templates/admin/profile.html:67
+msgid "Registered Users"
+msgstr ""
+
+#: templates/admin/profile.html:37 templates/admin/profile.html:177
+msgid "User Downloads"
+msgstr ""
+
+#: templates/admin/profile.html:46
+msgid "Filter by Name"
+msgstr ""
+
+#: templates/admin/profile.html:47
+msgid "Enter a name to search..."
+msgstr ""
+
+#: templates/admin/profile.html:50
+msgid "Filter by UID Status"
+msgstr ""
+
+#: templates/admin/profile.html:53 templates/admin/profile.html:103
+msgid "Linked"
+msgstr ""
+
+#: templates/admin/profile.html:54 templates/admin/profile.html:106
+#: templates/admin/profile.html:203
+msgid "Not linked"
+msgstr ""
+
+#: templates/admin/profile.html:74 templates/admin/profile.html:187
+msgid "ID"
+msgstr ""
+
+#: templates/admin/profile.html:75 templates/admin/profile.html:188
+msgid "Name"
+msgstr ""
+
+#: templates/admin/profile.html:76
+msgid "UID Linked"
+msgstr ""
+
+#: templates/admin/profile.html:77
+msgid "Created At"
+msgstr ""
+
+#: templates/admin/profile.html:78
+msgid "UID Linked At"
+msgstr ""
+
+#: templates/admin/profile.html:92
+msgid "Banned"
+msgstr ""
+
+#: templates/admin/profile.html:100
+msgid "Click to view details"
+msgstr ""
+
+#: templates/admin/profile.html:113
+msgid "Share access data"
+msgstr ""
+
+#: templates/admin/profile.html:113
+msgid "Share"
+msgstr ""
+
+#: templates/admin/profile.html:114 templates/admin/profile.html:243
+msgid "Change Password"
+msgstr ""
+
+#: templates/admin/profile.html:119
+msgid "Unban user"
+msgstr ""
+
+#: templates/admin/profile.html:119
+msgid "Unban"
+msgstr ""
+
+#: templates/admin/profile.html:124
+msgid "Ban user"
+msgstr ""
+
+#: templates/admin/profile.html:124
+msgid "Ban"
+msgstr ""
+
+#: templates/admin/profile.html:129 templates/admin/profile.html:218
+msgid "Clear daily quota"
+msgstr ""
+
+#: templates/admin/profile.html:130
+msgid "Clear quota"
+msgstr ""
+
+#: templates/admin/profile.html:133
+msgid "Delete"
+msgstr ""
+
+#: templates/admin/profile.html:144
+msgid "UID (Device ID)"
+msgstr ""
+
+#: templates/admin/profile.html:147
+msgid "Copy UID"
+msgstr ""
+
+#: templates/admin/profile.html:148
+msgid "Copy"
+msgstr ""
+
+#: templates/admin/profile.html:153
+msgid "Linked at:"
+msgstr ""
+
+#: templates/admin/profile.html:162 templates/admin/profile.html:228
+msgid "No users found"
+msgstr ""
+
+#: templates/admin/profile.html:181
+msgid ""
+"Manage daily download quota per user. Clearing the quota resets today’s "
+"counter for that user."
+msgstr ""
+
+#: templates/admin/profile.html:189
+msgid "UID"
+msgstr ""
+
+#: templates/admin/profile.html:190
+msgid "Downloads today"
+msgstr ""
+
+#: templates/admin/profile.html:191
+msgid "Tools"
+msgstr ""
+
+#: templates/admin/profile.html:222 templates/admin/stored_logs.html:89
+msgid "Details"
+msgstr ""
+
+#: templates/admin/profile.html:235
+msgid "Daily counts are tracked in the \"quote\" table of users_downloads.db."
+msgstr ""
+
+#: templates/admin/profile.html:242
+msgid "Create New User"
+msgstr ""
+
+#: templates/admin/profile.html:242
+msgid "Username"
+msgstr ""
+
+#: templates/admin/profile.html:242
+msgid "The password will be generated automatically"
+msgstr ""
+
+#: templates/admin/profile.html:242 templates/admin/profile.html:243
+#: templates/admin/profile.html:244
+msgid "Cancel"
+msgstr ""
+
+#: templates/admin/profile.html:242
+msgid "Create User"
+msgstr ""
+
+#: templates/admin/profile.html:243
+msgid "Change User Password"
+msgstr ""
+
+#: templates/admin/profile.html:243
+msgid "You are changing the password for user:"
+msgstr ""
+
+#: templates/admin/profile.html:243
+msgid "New Password"
+msgstr ""
+
+#: templates/admin/profile.html:244
+msgid "Confirm Deletion"
+msgstr ""
+
+#: templates/admin/profile.html:244
+msgid "Are you sure you want to delete the user"
+msgstr ""
+
+#: templates/admin/profile.html:244
+msgid "This action cannot be undone!"
+msgstr ""
+
+#: templates/admin/profile.html:244
+msgid "Delete User"
+msgstr ""
+
+#: templates/admin/profile.html:250 templates/admin/profile.html:461
+msgid "Today's Downloads"
+msgstr ""
+
+#: templates/admin/profile.html:258
+msgid "Time"
+msgstr ""
+
+#: templates/admin/profile.html:261
+msgid "Status"
+msgstr ""
+
+#: templates/admin/profile.html:265 templates/admin/profile.html:440
+msgid "No downloads today"
+msgstr ""
+
+#: templates/admin/profile.html:309
+msgid "Copied!"
+msgstr ""
+
+#: templates/admin/profile.html:334
+msgid "Copy Credentials"
+msgstr ""
+
+#: templates/admin/profile.html:337 templates/admin/profile.html:372
+msgid "Access Data"
+msgstr ""
+
+#: templates/admin/profile.html:339 templates/admin/profile.html:374
+msgid "Warning - Access is linked to your console, do not share!"
+msgstr ""
+
+#: templates/admin/profile.html:374
+msgid "(the user's current password)"
+msgstr ""
+
+#: templates/admin/profile.html:430 templates/admin/watcher.html:18
+msgid "Loading..."
+msgstr ""
+
+#: templates/admin/profile.html:446
+msgid "Completed"
+msgstr ""
+
+#: templates/admin/profile.html:446
+msgid "In progress"
+msgstr ""
+
+#: templates/admin/profile.html:457 templates/admin/profile.html:465
+msgid "Failed to load details"
+msgstr ""
+
+#: templates/admin/settings.html:15
+msgid "Core and Shop Settings"
+msgstr ""
+
+#: templates/admin/settings.html:20
+msgid "Shop Title"
+msgstr ""
+
+#: templates/admin/settings.html:25
+msgid "The name of your shop that will be displayed in the interface."
+msgstr ""
+
+#: templates/admin/settings.html:31
+msgid "Core Network Settings"
+msgstr ""
+
+#: templates/admin/settings.html:48
+msgid ""
+"Optional. If you use a domain or reverse proxy, enter the full URL here "
+"(without a trailing slash)."
+msgstr ""
+
+#: templates/admin/settings.html:49
+msgid "If left blank, the default URL (server IP:Port) will be used."
+msgstr ""
+
+#: templates/admin/settings.html:64
+msgid ""
+"Any change in these settings will result in an automatic restart of the "
+"service for the new settings to be applied."
+msgstr ""
+
+#: templates/admin/settings.html:68
+msgid ""
+"Make sure the new port is not in use by another service and is open in "
+"the firewall."
+msgstr ""
+
+#: templates/admin/settings.html:72
+msgid "You can use https by using nginx, apache, or caddy as a reverse proxy."
+msgstr ""
+
+#: templates/admin/settings.html:90
+msgid "Ex: https://mydomain.com or http://192.168.10.4 (external)"
+msgstr ""
+
+#: templates/admin/stored_logs.html:6
+msgid "Stored Logs"
+msgstr ""
+
+#: templates/admin/stored_logs.html:12
+msgid "Search Message"
+msgstr ""
+
+#: templates/admin/stored_logs.html:13
+msgid "Type to search..."
+msgstr ""
+
+#: templates/admin/stored_logs.html:16
+msgid "Log Type"
+msgstr ""
+
+#: templates/admin/stored_logs.html:18
+msgid "All Types"
+msgstr ""
+
+#: templates/admin/stored_logs.html:27
+msgid "All Sources"
+msgstr ""
+
+#: templates/admin/stored_logs.html:38 templates/admin/stored_logs.html:45
+#: templates/admin/stored_logs.html:138
+msgid "All Users"
+msgstr ""
+
+#: templates/admin/stored_logs.html:42
+msgid "Search user..."
+msgstr ""
+
+#: templates/admin/stored_logs.html:54
+msgid "Start Date"
+msgstr ""
+
+#: templates/admin/stored_logs.html:58
+msgid "End Date"
+msgstr ""
+
+#: templates/admin/stored_logs.html:67
+msgid "Clear Filters"
+msgstr ""
+
+#: templates/admin/watcher.html:11
+msgid "Watcher Status and Control"
+msgstr ""
+
+#: templates/admin/watcher.html:15
+msgid "Current Status"
+msgstr ""
+
+#: templates/admin/watcher.html:23
+msgid "Start Watcher"
+msgstr ""
+
+#: templates/admin/watcher.html:26
+msgid "Stop Watcher"
+msgstr ""
+
+#: templates/admin/watcher.html:29
+msgid "Scan All Now"
+msgstr ""
+
+#: templates/admin/watcher.html:38
+msgid "Scan in Progress"
+msgstr ""
+
+#: templates/admin/watcher.html:49
+msgid "Last Scan Summary"
+msgstr ""
+
+#: templates/admin/watcher.html:52
+msgid "View detailed log"
+msgstr ""
+
+#: templates/admin/watcher.html:58
+msgid "Monitored Directories"
+msgstr ""
+
+#: templates/admin/watcher.html:61
+msgid "Currently Watched Paths"
+msgstr ""
+
+#: templates/admin/watcher.html:67
+msgid "Last Scanned"
+msgstr ""
+
+#: templates/admin/watcher.html:73
+msgid "Loading paths..."
+msgstr ""
+
+#: templates/admin/watcher.html:79
+msgid "Add New Directory to Watch"
+msgstr ""
+
+#: templates/admin/watcher.html:82
+msgid "Enter full path to directory"
+msgstr ""
+
+#: templates/admin/watcher.html:84
+msgid "Add Path"
+msgstr ""
+
+#: templates/admin/watcher.html:154
+msgid "Running"
+msgstr ""
+
+#: templates/admin/watcher.html:159
+msgid "Stopped"
+msgstr ""
+
+#: templates/admin/watcher.html:172
+msgid "Never"
+msgstr ""
+
+#: templates/admin/watcher.html:178
+msgid "Remove Path"
+msgstr ""
+
+#: templates/admin/watcher.html:187
+msgid "No directories are being watched."
+msgstr ""
+
+#: templates/admin/watcher.html:221
+msgid "Success"
+msgstr ""
+
+#: templates/admin/watcher.html:239
+msgid "Processing file"
+msgstr ""
+
+#: templates/admin/watcher.html:239
+msgid "of"
+msgstr ""
+
+#: templates/admin/watcher.html:248 templates/admin/watcher.html:270
+msgid "Added"
+msgstr ""
+
+#: templates/admin/watcher.html:248 templates/admin/watcher.html:270
+msgid "new items."
+msgstr ""
+
+#: templates/admin/watcher.html:248
+msgid "files were not recognized or were corrupt."
+msgstr ""
+
+#: templates/admin/watcher.html:252
+#, python-format
+msgid "The last scan processed %(processed)s of %(total)s files."
+msgstr ""
+
+#: templates/admin/watcher.html:270
+msgid "Scan Complete!"
+msgstr ""
+
+#: templates/admin/watcher.html:281
+msgid ""
+"This will scan all monitored directories for new games. This may take a "
+"while. Continue?"
+msgstr ""
+
+#: templates/admin/watcher.html:301
+msgid "Are you sure you want to stop watching this directory?"
+msgstr ""
+

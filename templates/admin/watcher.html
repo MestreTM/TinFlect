@@ -1,0 +1,330 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ title }}</h1>
+</div>
+
+<div class="card mb-4 border-primary">
+    <div class="card-header bg-primary text-white">
+        <i class="bi bi-eye me-2"></i>
+        {{ _('Watcher Status and Control') }}
+    </div>
+    <div class="card-body">
+        <div class="d-flex align-items-center mb-3">
+            <h5 class="me-3 mb-0">{{ _('Current Status') }}:</h5>
+            <span id="watcher-status" class="badge fs-6">
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                {{ _('Loading...') }}
+            </span>
+        </div>
+        <div id="control-buttons">
+            <button id="start-watcher-btn" class="btn btn-outline-success me-2" disabled>
+                <i class="bi bi-play-circle me-1"></i>{{ _('Start Watcher') }}
+            </button>
+            <button id="stop-watcher-btn" class="btn btn-outline-danger" disabled>
+                <i class="bi bi-stop-circle me-1"></i>{{ _('Stop Watcher') }}
+            </button>
+            <button id="full-scan-btn" class="btn btn-primary">
+                <i class="bi bi-search me-1"></i>{{ _('Scan All Now') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="scan-progress-card" class="card mb-4" style="display: none;">
+    <div class="card-header">
+        <i class="bi bi-hourglass-split me-2"></i>
+        {{ _('Scan in Progress') }}
+    </div>
+    <div class="card-body">
+        <div class="progress" style="height: 25px;">
+            <div id="scan-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+        </div>
+        <div id="scan-progress-text" class="text-center mt-2 text-muted"></div>
+    </div>
+</div>
+
+<div id="scan-summary-card" class="alert alert-info" style="display: none;">
+    <h5 class="alert-heading"><i class="bi bi-check-circle-fill me-2"></i>{{ _('Last Scan Summary') }}</h5>
+    <p id="scan-summary-text"></p>
+    <hr>
+    <a href="#" id="scan-log-link" class="alert-link" target="_blank">{{ _('View detailed log') }}</a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="bi bi-folder2-open me-2"></i>
+        {{ _('Monitored Directories') }}
+    </div>
+    <div class="card-body">
+        <h6 class="mb-3">{{ _('Currently Watched Paths') }}:</h6>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">{{ _('Path') }}</th>
+                        <th scope="col">{{ _('Last Scanned') }}</th>
+                        <th scope="col" class="text-end">{{ _('Actions') }}</th>
+                    </tr>
+                </thead>
+                <tbody id="watched-dirs-tbody">
+                    <tr>
+                        <td colspan="3">{{ _('Loading paths...') }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h6 class="mt-4">{{ _('Add New Directory to Watch') }}:</h6>
+        <form id="add-path-form">
+            <div class="input-group">
+                <input type="text" id="new-path-input" class="form-control" placeholder="{{ _('Enter full path to directory') }}" required>
+                <button class="btn btn-primary" type="submit">
+                    <i class="bi bi-plus-lg me-1"></i>{{ _('Add Path') }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+    <div id="notification-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <i id="toast-icon" class="bi me-2"></i>
+            <strong class="me-auto" id="toast-title"></strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toast-body"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    let statusInterval;
+    const statusBadge = document.getElementById('watcher-status');
+    const startBtn = document.getElementById('start-watcher-btn');
+    const stopBtn = document.getElementById('stop-watcher-btn');
+    const fullScanBtn = document.getElementById('full-scan-btn');
+    const watchedTbody = document.getElementById('watched-dirs-tbody');
+    const addPathForm = document.getElementById('add-path-form');
+    const newPathInput = document.getElementById('new-path-input');
+    
+    const scanProgressCard = document.getElementById('scan-progress-card');
+    const scanProgressBar = document.getElementById('scan-progress-bar');
+    const scanProgressText = document.getElementById('scan-progress-text');
+    const scanSummaryCard = document.getElementById('scan-summary-card');
+    const scanSummaryText = document.getElementById('scan-summary-text');
+    const scanLogLink = document.getElementById('scan-log-link');
+
+    const toastElement = document.getElementById('notification-toast');
+    const toast = new bootstrap.Toast(toastElement);
+
+    function showNotification(title, message, type = 'info') {
+        const toastTitle = document.getElementById('toast-title');
+        const toastBody = document.getElementById('toast-body');
+        const toastIcon = document.getElementById('toast-icon');
+        
+        toastTitle.textContent = title;
+        toastBody.textContent = message;
+        toastIcon.className = 'bi me-2';
+
+        if (type === 'success') {
+            toastIcon.classList.add('bi-check-circle-fill', 'text-success');
+        } else if (type === 'error') {
+            toastIcon.classList.add('bi-x-circle-fill', 'text-danger');
+        } else {
+            toastIcon.classList.add('bi-info-circle-fill', 'text-primary');
+        }
+        toast.show();
+    }
+
+    async function updateStatus() {
+        try {
+            const response = await fetch("{{ url_for('get_watcher_status') }}");
+            if (!response.ok) throw new Error('Network response was not ok.');
+            
+            const data = await response.json();
+
+            statusBadge.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'text-dark');
+            if (data.is_running) {
+                statusBadge.innerHTML = `<i class="bi bi-check-circle me-1"></i>{{ _('Running') }}`;
+                statusBadge.classList.add('bg-success');
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+            } else {
+                statusBadge.innerHTML = `<i class="bi bi-stop-circle me-1"></i>{{ _('Stopped') }}`;
+                statusBadge.classList.add('bg-danger');
+                stopBtn.disabled = true;
+                startBtn.disabled = data.watched_paths.length === 0;
+            }
+
+            watchedTbody.innerHTML = '';
+            if (data.watched_paths.length > 0) {
+                data.watched_paths.forEach(item => {
+                    const tr = document.createElement('tr');
+                    
+                    const lastScan = item.last_scan 
+                        ? new Date(item.last_scan).toLocaleString() 
+                        : '{{ _('Never') }}';
+
+                    tr.innerHTML = `
+                        <td><code>${item.path}</code></td>
+                        <td>${lastScan}</td>
+                        <td class="text-end">
+                            <button class="btn btn-sm btn-outline-danger remove-path-btn" data-path="${item.path}" title="{{ _('Remove Path') }}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    watchedTbody.appendChild(tr);
+                });
+            } else {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="3" class="text-center text-muted">{{ _('No directories are being watched.') }}</td>`;
+                watchedTbody.appendChild(tr);
+            }
+
+            if (data.scan_status) {
+                if (data.scan_status.is_scanning) {
+                    updateProgressBar(data.scan_status.processed_files, data.scan_status.total_files);
+                } else if (data.scan_status.last_scan_log && data.scan_status.processed_files === data.scan_status.total_files && data.scan_status.total_files > 0) {
+                    scanProgressCard.style.display = 'none';
+                    showScanSummary(data.scan_status);
+                    fullScanBtn.disabled = false;
+                } else {
+                    fullScanBtn.disabled = false;
+                }
+            }
+
+        } catch (error) {
+            console.error('Error fetching watcher status:', error);
+            statusBadge.textContent = '{{ _('Error') }}';
+            statusBadge.classList.add('bg-warning', 'text-dark');
+        }
+    }
+
+    async function postApiCommand(url, body = {}) {
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(body)
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Unknown error occurred.');
+            }
+            showNotification('{{ _('Success') }}', data.message, 'success');
+        } catch (error) {
+            console.error(`Error with command ${url}:`, error);
+            showNotification('{{ _('Error') }}', error.message, 'error');
+        } finally {
+            setTimeout(updateStatus, 500);
+        }
+    }
+
+    function updateProgressBar(processed, total) {
+        scanProgressCard.style.display = 'block';
+        if (scanSummaryCard) scanSummaryCard.style.display = 'none';
+        fullScanBtn.disabled = true;
+
+        const percent = (total > 0) ? Math.round((processed / total) * 100) : 0;
+        scanProgressBar.style.width = percent + '%';
+        scanProgressBar.setAttribute('aria-valuenow', percent);
+        scanProgressBar.textContent = percent + '%';
+        scanProgressText.textContent = `{{ _('Processing file') }} ${processed} {{ _('of') }} ${total}`;
+    }
+
+    function showScanSummary(summaryData) {
+        scanProgressCard.style.display = 'none';
+        fullScanBtn.disabled = false;
+
+        let summaryMsg;
+        if (typeof summaryData.added !== 'undefined') {
+            summaryMsg = `{{ _('Added') }} ${summaryData.added} {{ _('new items.') }} | ${summaryData.unrecognized} {{ _('files were not recognized or were corrupt.') }}`;
+        } else {
+            const total = summaryData.total_files || 0;
+            const processed = summaryData.processed_files || 0;
+            summaryMsg = `{{ _('The last scan processed %(processed)s of %(total)s files.', processed=processed, total=total) }}`;
+        }
+        
+        scanSummaryText.textContent = summaryMsg;
+        scanLogLink.href = `{{ url_for('view_log', filename='placeholder') }}`.replace('placeholder', summaryData.log_file || summaryData.last_scan_log);
+        scanSummaryCard.style.display = 'block';
+    }
+
+    const eventSource = new EventSource("{{ url_for('watcher_progress_stream') }}");
+
+    eventSource.addEventListener('scan_progress', (event) => {
+        const progressData = JSON.parse(event.data);
+        updateProgressBar(progressData.processed, progressData.total);
+    });
+
+    eventSource.addEventListener('scan_complete', (event) => {
+        const summaryData = JSON.parse(event.data);
+        showScanSummary(summaryData);
+        showNotification('{{ _('Scan Complete!') }}', `{{ _('Added') }} ${summaryData.added} {{ _('new items.') }}`, 'success');
+        updateStatus();
+    });
+    
+    eventSource.onerror = (err) => console.error("EventSource for Watcher failed:", err);
+
+    startBtn.addEventListener('click', () => postApiCommand("{{ url_for('start_watcher') }}"));
+    stopBtn.addEventListener('click', () => postApiCommand("{{ url_for('stop_watcher') }}"));
+
+    fullScanBtn.addEventListener('click', () => {
+        if (fullScanBtn.disabled) return;
+        if (confirm("{{ _('This will scan all monitored directories for new games. This may take a while. Continue?') }}")) {
+            scanSummaryCard.style.display = 'none';
+            fullScanBtn.disabled = true;
+            postApiCommand("{{ url_for('full_scan_watcher') }}");
+        }
+    });
+    
+    addPathForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const newPath = newPathInput.value.trim();
+        if (newPath) {
+            postApiCommand("{{ url_for('add_watcher_path') }}", { path: newPath });
+            newPathInput.value = '';
+        }
+    });
+
+    watchedTbody.addEventListener('click', (e) => {
+        const removeBtn = e.target.closest('.remove-path-btn');
+        if (removeBtn) {
+            const pathToRemove = removeBtn.dataset.path;
+            if (confirm(`{{ _('Are you sure you want to stop watching this directory?') }}\n\n${pathToRemove}`)) {
+                postApiCommand("{{ url_for('remove_watcher_path') }}", { path: pathToRemove });
+            }
+        }
+    });
+
+    function startPolling() {
+        if (!statusInterval) {
+            updateStatus();
+            statusInterval = setInterval(updateStatus, 10000);
+        }
+    }
+
+    function stopPolling() {
+        clearInterval(statusInterval);
+        statusInterval = null;
+    }
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            stopPolling();
+        } else {
+            startPolling();
+        }
+    });
+
+    startPolling();
+});
+</script>
+{% endblock %}
