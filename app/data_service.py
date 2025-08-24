@@ -13,32 +13,25 @@ BASE_GAMES = {}
 
 def initialize_titledb():
     """
-    Loads TitleDB from JSON files and bootstraps data if missing.
-    This function should be called once at application startup.
+    Ensures that TitleDB JSON files are present on disk.
+    If they are missing, it downloads and extracts them.
     """
-    global TITLES_DB, BASE_GAMES
-    
     titledb_path = 'titledb'
-    if not os.path.exists(titledb_path) or not any(f.endswith('.json') for f in os.listdir(titledb_path)):
-        logging.warning("TitleDB data not found. Attempting to download...")
-        try:
-            _download_and_extract_titledb(titledb_path)
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Failed to download TitleDB: {e}")
-            return
+    key_file_path = os.path.join(titledb_path, 'titles.US.en.json')
 
-    logging.info("Processing database files, please wait...")
+    if os.path.exists(key_file_path):
+        logging.info("TitleDB files found, skipping download.")
+        return
+
+    logging.warning("TitleDB data not found. Attempting to download...")
+    try:
+        _download_and_extract_titledb(titledb_path)
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Failed to download TitleDB: {e}")
+        return
     
-    all_titles = {}
-    for filename in sorted(os.listdir(titledb_path)):
-        if filename.endswith('.json'):
-            file_path = os.path.join(titledb_path, filename)
-            with open(file_path, 'r', encoding='utf-8') as f:
-                all_titles.update(json.load(f))
-    
-    TITLES_DB = all_titles
-    BASE_GAMES = {k: v for k, v in TITLES_DB.items() if k.endswith('000')}
-    logging.info(f"Loaded {len(TITLES_DB)} total entries and {len(BASE_GAMES)} base games from TitleDB.")
+    if not os.path.exists(key_file_path):
+        logging.error(f"Download failed. Key file '{os.path.basename(key_file_path)}' not found after extraction.")
 
 def _download_and_extract_titledb(path):
     """Helper to download and extract the TitleDB zip file with a progress bar."""
